@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/header.css" />
   <link rel="stylesheet" href="assets/css/buttons.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 
   <style>
     body, .page { background: #f8f9fa; }
@@ -38,39 +39,27 @@
       text-align: center;
     }
 
-    .rechazo-icon-wrap {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: var(--danger-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .rechazo-icon-wrap .icon {
-      font-size: 32px;
-      color: var(--danger);
-    }
+    .lottie-wrap { width: 160px; height: 160px; flex-shrink: 0; }
 
     .success-title {
-      font-weight: 700;
-      font-size: 22px;
-      line-height: 30px;
-      color: var(--text-dark);
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 32px;
+      color: var(--text-main);
       margin: 0;
     }
 
     .success-subtitle {
+      font-family: 'Open Sans', sans-serif;
       font-size: 14px;
       line-height: 20px;
-      color: var(--text-sub);
+      color: var(--text-help);
       letter-spacing: 0.1px;
       margin: 6px 0 0;
     }
 
-    .actions { width: 100%; margin-top: 8px; }
+    .actions { width: 256px; margin-top: 8px; }
     .actions button { width: 100%; }
 
     .success-content {
@@ -84,6 +73,7 @@
       .success-card { flex: 1; padding: 32px 16px 24px; min-height: unset; justify-content: flex-start; align-items: stretch; }
       .success-inner { flex: 1; max-width: 100%; justify-content: space-between; }
       .success-content { flex: 1; justify-content: center; }
+      .actions { width: 100%; }
     }
   </style>
 </head>
@@ -106,19 +96,17 @@
       <div class="success-inner">
 
         <div class="success-content">
-          <div class="rechazo-icon-wrap">
-            <span class="icon">block</span>
-          </div>
+          <div class="lottie-wrap" id="lottie-anim"></div>
 
           <div>
             <p class="success-title">Rechazaste la solicitud de firma</p>
-            <p class="success-subtitle">Le avisamos al firmante que envió el documento que decidiste no firmarlo.</p>
+            <p class="success-subtitle">Registramos tu decisión. El documento no podrá ser firmado.</p>
           </div>
         </div>
 
         <div class="actions">
-          <button class="btn-outline" onclick="window.location.href='index.html'">
-            <span>Ir al inicio</span>
+          <button class="btn-primary active" onclick="window.location.href='index.html'">
+            <span>Salir</span>
           </button>
         </div>
 
@@ -132,5 +120,9 @@
   </main>
 
 </div>
+
+<script>
+  lottie.loadAnimation({ container: document.getElementById('lottie-anim'), renderer: 'svg', loop: false, autoplay: true, path: 'assets/success-check.json' });
+</script>
 </body>
 </html>
