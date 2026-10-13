@@ -216,7 +216,7 @@
 
           <!-- Lista de pasos -->
           <div class="onboarding-list">
-            <div class="list-item">
+            <div class="list-item" id="list-item-otp">
               <div class="list-icon-wrap">
                 <span class="icon">pin</span>
               </div>
@@ -250,7 +250,7 @@
             <span class="tyc-link" onclick="window.location.href='terminos-condiciones.html'">términos y condiciones del acuerdo con suscriptores</span>
           </p>
         </div>
-        <button class="btn-continuar" id="btn-continuar" disabled onclick="sessionStorage.setItem('flow','pf'); window.location.href='otp-correo.html'">
+        <button class="btn-continuar" id="btn-continuar" disabled onclick="continuar()">
           Continuar
         </button>
       </div>
@@ -273,6 +273,19 @@
     tycBtn.classList.toggle('on');
     btnContinuar.disabled = !tycBtn.classList.contains('on');
   });
+
+  /* En el flujo de recuperación (olvidé mi clave) la identidad ya se
+     verificó por OTP antes de llegar acá, así que se salta ese paso:
+     se oculta el ítem de la lista y se va directo a biometría. */
+  const esRecuperacion = sessionStorage.getItem('origenRecuperacion') === '1';
+  if (esRecuperacion) {
+    document.getElementById('list-item-otp').style.display = 'none';
+  }
+
+  function continuar() {
+    sessionStorage.setItem('flow', 'pf');
+    window.location.href = esRecuperacion ? 'biometria.html' : 'otp-correo.html';
+  }
 </script>
 </body>
 </html>
