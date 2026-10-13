@@ -13,33 +13,56 @@
   <link rel="stylesheet" href="assets/css/buttons.css" />
 
   <style>
-    /* ─── BANNER ADVERTENCIA ─────────────────────────── */
-    .warning-banner {
-      background: var(--warning-bg);
-      border-radius: 12px;
-      padding: 10px;
+    .main-card { align-items: center; gap: 32px; }
+
+    .confirm-content {
       display: flex;
-      gap: 10px;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      max-width: 484px;
     }
 
-    .warning-icon {
-      font-size: 20px;
-      color: var(--warning-icon);
+    .confirm-icon-wrap {
+      width: 112px;
+      height: 112px;
       flex-shrink: 0;
-      font-variation-settings: 'FILL' 1;
-      line-height: 1;
-      margin-top: 1px;
+      border-radius: 32px;
+      background: var(--warning-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .warning-text {
+    .confirm-icon-wrap .icon { font-size: 56px; color: var(--warning-icon); }
+
+    .confirm-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .confirm-title {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 32px;
+      color: var(--text-main);
+    }
+
+    .confirm-subtitle {
       font-family: 'Inter', sans-serif;
-      font-size: 12px;
+      font-weight: 400;
+      font-size: 14px;
       line-height: 20px;
       color: var(--text-help);
+      letter-spacing: 0.1px;
     }
 
-    .warning-text strong { font-weight: 700; }
+    .confirm-subtitle strong { font-weight: 700; }
 
     /* ─── CHECKBOX (mismo patrón que inicio.html) ───── */
     .tyc-row {
@@ -89,18 +112,17 @@
     .tyc-text {
       font-weight: 400;
       font-size: 14px;
-      line-height: 20px;
+      line-height: 22px;
       color: #212529;
       flex: 1;
     }
 
-    .form-body { display: flex; flex-direction: column; gap: 24px; }
-    .btn-confirm-row { display: flex; }
-    .main-card { gap: 16px; }
+    .btn-row { width: 100%; }
+    .btn-row > button { flex: 1; }
 
     @media (max-width: 640px) {
       .main-card { flex: 1; }
-      .form-body { flex: 1; }
+      .confirm-content { max-width: 100%; justify-content: center; flex: 1; }
       .btn-row { margin-top: auto; }
     }
   </style>
@@ -122,20 +144,15 @@
   <div class="card-wrap">
     <div class="main-card">
 
-      <!-- Título -->
-      <div class="title-section">
-        <h2 class="card-title">¿Querés generar una nueva clave de firma?</h2>
-        <p class="card-subtitle">Para crear una nueva clave, primero tenés que revocar tu certificado digital actual y volver a verificar tu identidad.</p>
-      </div>
+      <div class="confirm-content">
 
-      <div class="form-body">
+        <div class="confirm-icon-wrap">
+          <span class="icon">error</span>
+        </div>
 
-        <!-- Banner advertencia -->
-        <div class="warning-banner">
-          <span class="icon warning-icon">warning</span>
-          <p class="warning-text">
-            <strong>Esta acción revoca tu certificado digital actual</strong> y no se puede deshacer. Vas a tener que volver a verificar tu identidad para emitir uno nuevo.
-          </p>
+        <div class="confirm-title-block">
+          <h2 class="confirm-title">¿Querés generar una nueva clave de firma?</h2>
+          <p class="confirm-subtitle">Te recordamos que por seguridad, tu clave de firma <strong>no se puede recuperar</strong>. Para crear una nueva, tenés que <strong>eliminar la anterior y crear una nueva</strong>.</p>
         </div>
 
         <!-- Checkbox -->
@@ -143,19 +160,19 @@
           <button class="tyc-checkbox" id="tyc" aria-label="Aceptar">
             <div class="tyc-checkbox-inner"></div>
           </button>
-          <p class="tyc-text">Acepto eliminar mi clave de firma (revocar certificado digital).</p>
+          <p class="tyc-text">Acepto eliminar mi clave de firma (Revocar certificado digital).</p>
         </div>
 
-        <!-- Botones -->
-        <div class="btn-row">
-          <button class="btn-outline" onclick="window.location.href='confirmar-firma.html'">
-            <span>Volver</span>
-          </button>
-          <button class="btn-submit" id="btn-continuar" onclick="continuar()">
-            <span>Continuar</span>
-          </button>
-        </div>
+      </div>
 
+      <!-- Botones -->
+      <div class="btn-row">
+        <button class="btn-outline" onclick="window.location.href='confirmar-firma.html'">
+          <span>Volver</span>
+        </button>
+        <button class="btn-submit" id="btn-continuar" onclick="continuar()">
+          <span>Continuar</span>
+        </button>
       </div>
 
     </div><!-- /.main-card -->
