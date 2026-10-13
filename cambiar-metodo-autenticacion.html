@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Cambiar método de autenticación | FID by Lakaut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/header.css" />
+  <link rel="stylesheet" href="assets/css/buttons.css" />
+
+  <style>
+    .method-option {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      width: 100%;
+      padding: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color .15s, background-color .15s;
+    }
+
+    .method-option.selected {
+      border-color: var(--blue);
+      background: var(--bg-plan);
+    }
+
+    .method-option-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: #f5f6fe;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+    }
+
+    .method-option-icon .icon { font-size: 20px; }
+
+    .method-option-text { display: flex; flex-direction: column; gap: 2px; }
+
+    .method-option-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .method-option-subtitle {
+      font-size: 13px;
+      color: var(--text-help);
+    }
+
+    .form-body { display: flex; flex-direction: column; gap: 32px; }
+
+    @media (max-width: 640px) {
+      .main-card { flex: 1; }
+      .form-body { flex: 1; }
+      .btn-row { margin-top: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img class="header-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" width="55" height="38" />
+    <span class="header-title"><span class="header-title-skeleton"></span></span>
+    <button class="icon-btn" aria-label="Cerrar" onclick="window.location.href='index.html'">
+      <span class="icon">close</span>
+    </button>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <main class="content-area">
+  <div class="card-wrap">
+    <div class="main-card">
+
+      <!-- Título -->
+      <div class="title-section">
+        <h2 class="card-title">Cambiar método de autenticación</h2>
+        <p class="card-subtitle">Te vamos a enviar un código de 6 dígitos a tu correo electrónico.</p>
+      </div>
+
+      <div class="form-body">
+
+        <!-- Opción -->
+        <button class="method-option selected" id="opt-email" type="button">
+          <div class="method-option-icon">
+            <span class="icon">mail</span>
+          </div>
+          <div class="method-option-text">
+            <span class="method-option-title">Correo electrónico</span>
+            <span class="method-option-subtitle">Te enviaremos el código a <strong>corr***@ejem****com</strong></span>
+          </div>
+        </button>
+
+        <!-- Botones -->
+        <div class="btn-row">
+          <button class="btn-outline" onclick="history.back()">
+            <span>Volver</span>
+          </button>
+          <button class="btn-submit active" onclick="continuar()">
+            <span>Continuar</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div><!-- /.main-card -->
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <span class="powered-label">POWERED BY</span>
+      <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    </div>
+
+  </div><!-- /.card-wrap -->
+  </main>
+
+</div>
+
+<script>
+  function continuar() {
+    sessionStorage.setItem('otpMetodo', 'email');
+    window.location.href = 'firmar-otp.html';
+  }
+</script>
+</body>
+</html>

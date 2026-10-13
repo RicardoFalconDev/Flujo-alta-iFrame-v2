@@ -30,6 +30,19 @@
       display: block;
     }
 
+    .otp-switch-row {
+      font-size: 13px;
+      color: var(--text-help);
+      margin-top: 8px;
+    }
+
+    .otp-switch-row .tyc-link {
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+      color: var(--text-help);
+    }
+
     /* ─── OTP BODY ───────────────────────────────────── */
     .otp-body {
       display: flex;
@@ -173,12 +186,17 @@
 
       <!-- Ilustración -->
       <div class="otp-illustration">
-        <img src="assets/images/otp-sms.svg" alt="" width="121" height="94" />
+        <img src="assets/images/otp-sms.svg" alt="" width="121" height="94" id="otp-illustration-img" />
       </div>
 
       <!-- Título -->
-      <div class="title-section">
-        <h2 class="card-title">Ingresá el código que enviamos al +54 XXXXXXX 78.</h2>
+      <div class="title-section" style="text-align:center;">
+        <h2 class="card-title" id="otp-title">Ingresá el código de seguridad</h2>
+        <p class="card-subtitle" id="otp-subtitle">Lo enviamos por SMS al <strong>+54 XXXXXXX 78</strong>.</p>
+        <p class="otp-switch-row">
+          ¿No tenés acceso?
+          <span class="tyc-link" onclick="window.location.href='cambiar-metodo-autenticacion.html'">Cambiar método de autenticación.</span>
+        </p>
       </div>
 
       <!-- OTP + mensajes + botones -->
@@ -306,6 +324,12 @@
     btnVerify.classList.remove('active');
     startTimer();
     cells[0].focus();
+  }
+
+  /* ── Método de verificación (SMS por default, email si se cambió) ── */
+  if (sessionStorage.getItem('otpMetodo') === 'email') {
+    document.getElementById('otp-illustration-img').src = 'assets/images/otp-email.svg';
+    document.getElementById('otp-subtitle').innerHTML = 'Enviamos un mail a <strong>corr***@ejem****com</strong>.';
   }
 
   startTimer();
