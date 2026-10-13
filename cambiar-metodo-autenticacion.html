@@ -13,52 +13,55 @@
   <link rel="stylesheet" href="assets/css/buttons.css" />
 
   <style>
+    .main-card { gap: 32px; }
+    .form-body { display: flex; flex-direction: column; gap: 52px; width: 100%; }
+
     .method-option {
       display: flex;
-      gap: 12px;
-      align-items: flex-start;
+      gap: 20px;
+      align-items: center;
       width: 100%;
-      padding: 16px;
-      border: 1.5px solid var(--border);
+      padding: 25px;
+      background: #fff;
+      border: 1px solid var(--border-card);
       border-radius: 12px;
-      cursor: pointer;
-      transition: border-color .15s, background-color .15s;
-    }
-
-    .method-option.selected {
-      border-color: var(--blue);
-      background: var(--bg-plan);
     }
 
     .method-option-icon {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      background: #f5f6fe;
-      border: 1px solid #bfdbfe;
-      border-radius: 12px;
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+      border-radius: 9999px;
+      background: #f2f3fe;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--blue);
     }
 
-    .method-option-icon .icon { font-size: 20px; }
+    .method-option-icon .icon { font-size: 24px; }
 
-    .method-option-text { display: flex; flex-direction: column; gap: 2px; }
+    .method-option-text { display: flex; flex-direction: column; }
 
     .method-option-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dark);
     }
 
     .method-option-subtitle {
-      font-size: 13px;
-      color: var(--text-help);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 20px;
+      color: #6b7280;
+      padding-top: 5px;
     }
 
-    .form-body { display: flex; flex-direction: column; gap: 32px; }
+    .method-option-subtitle strong { font-weight: 700; }
+
+    .btn-row { width: 100%; }
+    .btn-row > button { flex: 1; }
 
     @media (max-width: 640px) {
       .main-card { flex: 1; }
@@ -85,30 +88,30 @@
     <div class="main-card">
 
       <!-- Título -->
-      <div class="title-section">
+      <div class="title-section" style="text-align:center;">
         <h2 class="card-title">Cambiar método de autenticación</h2>
-        <p class="card-subtitle">Te vamos a enviar un código de 6 dígitos a tu correo electrónico.</p>
+        <p class="card-subtitle" id="header-subtitle">Te vamos a enviar un código de 6 dígitos a tu correo electrónico.</p>
       </div>
 
       <div class="form-body">
 
         <!-- Opción -->
-        <button class="method-option selected" id="opt-email" type="button">
+        <div class="method-option">
           <div class="method-option-icon">
-            <span class="icon">mail</span>
+            <span class="icon" id="option-icon">alternate_email</span>
           </div>
           <div class="method-option-text">
-            <span class="method-option-title">Correo electrónico</span>
-            <span class="method-option-subtitle">Te enviaremos el código a <strong>corr***@ejem****com</strong></span>
+            <span class="method-option-title" id="option-title">Correo electrónico</span>
+            <span class="method-option-subtitle" id="option-subtitle">Te enviaremos el código a <strong>corr***@eje****com</strong></span>
           </div>
-        </button>
+        </div>
 
         <!-- Botones -->
         <div class="btn-row">
           <button class="btn-outline" onclick="history.back()">
             <span>Volver</span>
           </button>
-          <button class="btn-submit active" onclick="continuar()">
+          <button class="btn-primary active" onclick="continuar()">
             <span>Continuar</span>
           </button>
         </div>
@@ -129,8 +132,20 @@
 </div>
 
 <script>
+  /* El método ofrecido es siempre el OPUESTO al actual (si estás en SMS te
+     ofrece pasar a email, y viceversa). */
+  const actual = sessionStorage.getItem('otpMetodo') === 'email' ? 'email' : 'sms';
+  const ofrecer = actual === 'email' ? 'sms' : 'email';
+
+  if (ofrecer === 'sms') {
+    document.getElementById('header-subtitle').textContent = 'Te vamos a enviar un mensaje de texto con un código de 6 dígitos.';
+    document.getElementById('option-icon').textContent = 'sms';
+    document.getElementById('option-title').textContent = 'Mensaje de texto (SMS)';
+    document.getElementById('option-subtitle').innerHTML = 'Te enviaremos el código al <strong>+54 XXXXXXX 78</strong>';
+  }
+
   function continuar() {
-    sessionStorage.setItem('otpMetodo', 'email');
+    sessionStorage.setItem('otpMetodo', ofrecer);
     window.location.href = 'firmar-otp.html';
   }
 </script>

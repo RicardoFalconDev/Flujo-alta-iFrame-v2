@@ -21,9 +21,7 @@
     .main-card { padding-bottom: 24px; }
 
     /* ─── VISOR ──────────────────────────────────────────────── */
-    /* Altura fija menor a la suma de ambas páginas (686px) para que haga
-       falta scrollear y se pueda ver la barra de progreso en acción. */
-    :root { --viewport-h: 450px; }
+    :root { --viewport-h: 686px; }
 
     .viewer {
       width: 100%;
@@ -51,7 +49,8 @@
     .progress[data-state="completo"] .progress__message .icon { color: #0d6d64; }
     .progress[data-state="completo"] .progress__count { color: var(--text-dark); }
 
-    .progress__bar { position: relative; height: 4px; overflow: hidden; border-radius: 2px; background: #e5e7eb; }
+    .progress__bar { position: relative; height: 4px; overflow: hidden; border-radius: 2px; background: #e9ecef; }
+    .progress[data-state="en-progreso"] .progress__bar { background: #e5e7eb; }
     .progress__fill {
       position: absolute; inset: 0;
       background: var(--blue);
@@ -85,6 +84,7 @@
     .pdf-page {
       position: relative;
       width: calc(462px * var(--zoom, 1));
+      aspect-ratio: 462 / 653.788;
       background: #fff;
       border: .537px solid #dee2e6;
       border-radius: 1.553px;
@@ -103,7 +103,7 @@
       color: #1c1c1c;
     }
 
-    .pdf-page-content h2 { font-family: 'Inter', sans-serif; font-size: 3.9cqw; font-weight: 600; line-height: 1.35; margin-bottom: 4cqw; color: #0b0c0e; }
+    .pdf-page-content h2 { font-family: 'Inter', sans-serif; font-size: 3.9cqw; font-weight: 600; line-height: 1.35; margin-bottom: 4cqw; }
     .pdf-page-content p { margin-bottom: 2.6cqw; }
     .pdf-page-content strong { font-weight: 700; }
     .pdf-page-content .section-title { font-weight: 700; margin-top: 5.5cqw; margin-bottom: 1.5cqw; }
@@ -137,7 +137,7 @@
       border-radius: 8px;
       background: #898999;
       opacity: .6;
-      box-shadow: 0 4px 4px rgba(72,70,82,.05), 0 1px 2px rgba(72,70,82,.05);
+      box-shadow: 0 1px 2px rgba(72,70,82,.05), 0 4px 4px rgba(72,70,82,.05), 0 9px 5px rgba(72,70,82,.03);
       cursor: grab;
     }
     .scrollbar.is-dragging .scrollbar__thumb { cursor: grabbing; opacity: .8; }
@@ -167,6 +167,7 @@
     }
     .chip .icon { font-size: 16px; }
     .chip:hover { background: #2230b5; }
+    .chip:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
     .chip.is-hidden { opacity: 0; transform: translate(-50%, 8px); pointer-events: none; }
 
     /* ── Toolbar inferior (zoom) ── */
@@ -191,9 +192,9 @@
       transition: background .12s;
       flex-shrink: 0;
     }
-    .pdf-ctrl-btn:hover { background: rgba(0,0,0,.06); }
-    .pdf-ctrl-btn:disabled { opacity: .35; cursor: not-allowed; }
-    .pdf-ctrl-btn:disabled:hover { background: none; }
+    .pdf-ctrl-btn:hover:not(:disabled) { background: #e9ecef; }
+    .pdf-ctrl-btn:disabled { opacity: .35; cursor: default; }
+    .pdf-ctrl-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
     .pdf-ctrl-btn .icon { font-size: 20px; }
 
     .pdf-ctrl-chip {
@@ -202,6 +203,7 @@
       display: flex; align-items: center; justify-content: center;
       font-family: 'Inter', sans-serif; font-weight: 500; font-size: 12px; color: #212121;
       padding: 1px 13px; user-select: none;
+      font-variant-numeric: tabular-nums;
     }
 
     /* ─── BOTONES ─────────────────────────────────────────── */
@@ -256,7 +258,17 @@
     }
 
     @media (max-width: 640px) {
-      :root { --viewport-h: 320px; }
+      .viewer__header { padding: 12px 8px 13px 13.33px; }
+      .progress__row { gap: 8px; }
+      .progress__message { flex: 1; gap: 4px; align-items: flex-start; }
+      .progress__label { font-size: 12px; }
+      /* El check de 16px queda dentro del renglón de texto: la 2da línea
+         arranca debajo del ícono, así el indicador no cambia de alto. */
+      .progress[data-state="completo"] .progress__message { display: block; position: relative; }
+      .progress[data-state="completo"] .progress__message .icon { position: absolute; top: 1px; left: 0; font-size: 16px; }
+      .progress[data-state="completo"] .progress__label { text-indent: 20px; }
+
+      .viewer__scroll { padding: 16px 16px 16px 8px; }
       .pdf-page { width: calc(min(462px, 100vw - 96px) * var(--zoom, 1)); border-width: .381px; }
       .scrollbar { right: 5px; width: 12px; padding: 2px; }
       .chip { bottom: 10px; }
@@ -265,7 +277,8 @@
       .btn-rechazar { flex: none; width: 100%; }
       .btn-firmar { width: 100%; }
       .tooltip { left: 0; right: 0; align-items: center; }
-      .tooltip__body { width: 100%; white-space: normal; }
+      .tooltip__body { width: 100%; gap: 4px; padding: 10px 8px; white-space: normal; }
+      .tooltip__title { font-size: 12px; }
       .tooltip__arrow { margin-right: 0; }
     }
   </style>
@@ -683,17 +696,51 @@
     if (e.key === 'Escape') hideTooltip();
   });
 
+  /* ── Alto del visor ajustado a la ventana (una página completa como máximo) ──
+     Igual que el prototipo de referencia, pero midiendo el "chrome" de la
+     página a partir de los elementos hermanos del visor (header, botones,
+     footer) en vez de document.body.scrollHeight: ese proyecto no tiene la
+     regla compartida ".page{min-height:100vh}" que usa el resto de este
+     sitio, y con ella body.scrollHeight nunca baja del alto de la ventana. */
+  const header     = document.querySelector('.header');
+  const contentEl  = document.querySelector('.content-area');
+  const mainCardEl = document.querySelector('.main-card');
+  const cardFooter = document.querySelector('.card-footer');
+  const btnRowEl   = document.querySelector('.btn-row');
+  const viewerEl   = document.querySelector('.viewer');
+
+  const VIEWPORT_MIN = 240;
+  function fitToWindow() {
+    const root   = document.documentElement;
+    const caCs   = getComputedStyle(contentEl);
+    const mcCs   = getComputedStyle(mainCardEl);
+    const gap    = parseFloat(mcCs.rowGap || mcCs.gap) || 0;
+    const chrome = header.offsetHeight
+      + parseFloat(caCs.paddingTop) + parseFloat(caCs.paddingBottom)
+      + parseFloat(mcCs.paddingTop) + parseFloat(mcCs.paddingBottom)
+      + gap * 2 /* sr-only→viewer, viewer→btn-row */
+      + btnRowEl.offsetHeight
+      + cardFooter.offsetHeight;
+    const available = window.innerHeight - chrome;
+    const cs   = getComputedStyle(scroll);
+    const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom')) || 1;
+    const onePage = pages[0].offsetHeight / zoom + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    const h = Math.max(VIEWPORT_MIN, Math.min(Math.floor(onePage), available));
+    root.style.setProperty('--viewport-h', `${h}px`);
+  }
+
   /* ── Init ── */
   function init() {
     renderStamps();
+    fitToWindow();
     renderProgress();
     setZoom(zoomIndex);
     scroll.scrollTop = 0;
     updateScrollbar();
   }
   init();
-  if (document.fonts) document.fonts.ready.then(updateScrollbar);
-  window.addEventListener('resize', () => { checkReviewed(); updateScrollbar(); });
+  if (document.fonts) document.fonts.ready.then(() => { fitToWindow(); updateScrollbar(); });
+  window.addEventListener('resize', () => { fitToWindow(); checkReviewed(); updateScrollbar(); });
 </script>
 </body>
 </html>
