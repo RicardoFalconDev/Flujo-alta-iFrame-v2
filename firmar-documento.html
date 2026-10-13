@@ -18,7 +18,13 @@
       clip: rect(0 0 0 0); white-space: nowrap;
     }
 
+    .main-card { padding-bottom: 24px; }
+
     /* ─── VISOR ──────────────────────────────────────────────── */
+    /* Altura fija menor a la suma de ambas páginas (686px) para que haga
+       falta scrollear y se pueda ver la barra de progreso en acción. */
+    :root { --viewport-h: 450px; }
+
     .viewer {
       width: 100%;
       border: 1px solid #e5e7eb;
@@ -30,7 +36,7 @@
       display: flex;
       align-items: center;
       min-height: 36px;
-      padding: 12px 16px 13px;
+      padding: 12px 16px 13px 21.33px;
       background: #f8f9fa;
       border-bottom: 1px solid #e5e7eb;
       border-radius: 12px 12px 0 0;
@@ -65,43 +71,52 @@
     /* ── Área del documento ── */
     .viewer__body { position: relative; background: #f8f9fa; }
     .viewer__scroll {
-      height: 540px;
+      height: var(--viewport-h);
       overflow: auto;
       padding: 16px;
-      display: flex;
-      justify-content: center;
       scrollbar-width: none;
       outline: none;
     }
     .viewer__scroll::-webkit-scrollbar { display: none; }
+    .viewer__scroll:focus-visible { box-shadow: inset 0 0 0 2px var(--blue); }
 
-    .viewer__pages { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 460px; }
+    .viewer__pages { display: flex; flex-direction: column; align-items: center; gap: 16px; width: max-content; min-width: 100%; }
 
     .pdf-page {
+      position: relative;
+      width: calc(462px * var(--zoom, 1));
       background: #fff;
-      border: .5px solid #dee2e6;
-      border-radius: 2px;
-      padding: 40px 44px 56px;
-      font-family: 'Inter', sans-serif;
-      font-size: calc(11.5px * var(--zoom, 1));
-      line-height: 1.65;
-      color: #1a1a1a;
+      border: .537px solid #dee2e6;
+      border-radius: 1.553px;
+      overflow: hidden;
+      /* El contenedor de container-query no puede usar unidades cqw sobre sí
+         mismo — por eso el padding/font-size viven en .pdf-page-content, un
+         hijo directo, no acá. */
+      container-type: inline-size;
     }
 
-    .pdf-page h2 { font-family: 'Inter', sans-serif; font-size: 1.2em; font-weight: 700; line-height: 1.4; margin-bottom: 20px; color: #0b0c0e; }
-    .pdf-page p { margin-bottom: 12px; }
-    .pdf-page strong { font-weight: 700; }
-    .pdf-page .section-title { font-weight: 700; margin-top: 28px; margin-bottom: 8px; }
+    .pdf-page-content {
+      padding: 13.8cqw 11.9cqw;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.95cqw;
+      line-height: 1.55;
+      color: #1c1c1c;
+    }
 
-    .pdf-signature-table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin-top: 8px; }
-    .pdf-signature-table td, .pdf-signature-table th { border: 1px solid #bbb; padding: 5px 8px; vertical-align: top; }
-    .pdf-signature-table .sig-cell { height: 80px; padding: 6px; vertical-align: middle; }
+    .pdf-page-content h2 { font-family: 'Inter', sans-serif; font-size: 3.9cqw; font-weight: 600; line-height: 1.35; margin-bottom: 4cqw; color: #0b0c0e; }
+    .pdf-page-content p { margin-bottom: 2.6cqw; }
+    .pdf-page-content strong { font-weight: 700; }
+    .pdf-page-content .section-title { font-weight: 700; margin-top: 5.5cqw; margin-bottom: 1.5cqw; }
 
-    .sig-stamp { width: 100%; height: 100%; border: 1px dashed; border-radius: 4px; position: relative; overflow: hidden; min-height: 66px; }
-    .sig-stamp-card { position: absolute; inset: 0; border-left: 4px solid; display: flex; align-items: center; justify-content: center; padding: 8px 16px; box-shadow: 0 4px 5px rgba(0,0,0,0.10); }
+    .pdf-signature-table { width: 100%; border-collapse: collapse; font-size: 0.92em; margin-top: 1.5cqw; }
+    .pdf-signature-table td, .pdf-signature-table th { border: .5px solid #bbb; padding: 1cqw 1.5cqw; vertical-align: top; }
+    .pdf-signature-table .sig-cell { height: 13cqw; padding: 1cqw; vertical-align: middle; }
+
+    .sig-stamp { width: 100%; height: 100%; border: 1px dashed; border-radius: 4px; position: relative; overflow: hidden; min-height: 44px; }
+    .sig-stamp-card { position: absolute; inset: 0; border-left: 4px solid; display: flex; align-items: center; justify-content: center; padding: 1.5cqw 3cqw; box-shadow: 0 4px 5px rgba(0,0,0,0.10); }
     .sig-stamp-name { font-size: 1.05em; font-weight: 600; font-family: 'Inter', sans-serif; text-align: center; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .pdf-page-num { text-align: center; font-size: 0.85em; color: #aaa; margin-top: 24px; }
+    .pdf-page-num { text-align: center; font-size: 0.9em; color: #aaa; margin-top: 4cqw; }
 
     /* ── Scrollbar custom ── */
     .scrollbar {
@@ -109,7 +124,7 @@
       top: 16px;
       right: 11px;
       width: 16px;
-      height: calc(540px - 32px);
+      height: calc(var(--viewport-h) - 32px);
       padding: 4px;
       background: #fff;
       border: .5px solid #dee2e6;
@@ -131,7 +146,7 @@
     .chip {
       position: absolute;
       left: 50%;
-      bottom: 16px;
+      bottom: 28px;
       transform: translateX(-50%);
       display: inline-flex;
       align-items: center;
@@ -148,10 +163,10 @@
       white-space: nowrap;
       cursor: pointer;
       filter: drop-shadow(0 4px 6px rgba(26,31,102,.25));
-      transition: opacity .2s, transform .2s;
+      transition: opacity .2s, transform .2s, background-color .15s;
     }
     .chip .icon { font-size: 16px; }
-    .chip:hover { opacity: .92; }
+    .chip:hover { background: #2230b5; }
     .chip.is-hidden { opacity: 0; transform: translate(-50%, 8px); pointer-events: none; }
 
     /* ── Toolbar inferior (zoom) ── */
@@ -159,7 +174,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 21px;
       min-height: 36px;
       padding: 13px 16px 12px;
       background: #f8f9fa;
@@ -167,8 +182,10 @@
       border-radius: 0 0 12px 12px;
     }
 
+    .toolbar-group { display: flex; align-items: center; gap: 4px; height: 32px; }
+
     .pdf-ctrl-btn {
-      width: 28px; height: 28px;
+      width: 24px; height: 24px;
       display: flex; align-items: center; justify-content: center;
       border-radius: 4px; color: #364153;
       transition: background .12s;
@@ -181,10 +198,10 @@
 
     .pdf-ctrl-chip {
       background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
-      height: 28px; min-width: 52px;
+      height: 32px; min-width: 52px;
       display: flex; align-items: center; justify-content: center;
       font-family: 'Inter', sans-serif; font-weight: 500; font-size: 12px; color: #212121;
-      padding: 0 10px; user-select: none;
+      padding: 1px 13px; user-select: none;
     }
 
     /* ─── BOTONES ─────────────────────────────────────────── */
@@ -229,17 +246,27 @@
     .tooltip__text { display: flex; flex-direction: column; gap: 2px; }
     .tooltip__title { font-family: 'Inter', sans-serif; font-size: 13px; line-height: 19px; font-weight: 600; color: #fff; }
     .tooltip__detail { font-family: 'Inter', sans-serif; font-size: 12px; line-height: 17px; color: #ccd1db; }
+    .tooltip__arrow {
+      width: 0; height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #16181d;
+      margin-top: -1px;
+      margin-right: 122px;
+    }
 
     @media (max-width: 640px) {
-      .viewer__scroll { height: 360px; padding: 16px 16px 16px 8px; }
-      .pdf-page { padding: 24px 20px 36px; }
-      .scrollbar { height: calc(360px - 32px); right: 5px; width: 12px; padding: 2px; }
+      :root { --viewport-h: 320px; }
+      .pdf-page { width: calc(min(462px, 100vw - 96px) * var(--zoom, 1)); border-width: .381px; }
+      .scrollbar { right: 5px; width: 12px; padding: 2px; }
       .chip { bottom: 10px; }
+      .viewer__toolbar { padding: 9px 16px 8px; }
       .btn-row { flex-direction: column-reverse; gap: 8px; margin-top: auto; }
       .btn-rechazar { flex: none; width: 100%; }
       .btn-firmar { width: 100%; }
       .tooltip { left: 0; right: 0; align-items: center; }
       .tooltip__body { width: 100%; white-space: normal; }
+      .tooltip__arrow { margin-right: 0; }
     }
   </style>
 </head>
@@ -291,6 +318,7 @@
 
               <!-- Página 1 -->
               <div class="pdf-page" data-page="1">
+               <div class="pdf-page-content">
                 <h2>Autorización para retiro de<br>pertenencias</h2>
 
                 <p>Esta autorización tiene validez desde el día <strong>16 de Abril de 2026</strong> hasta el día <strong>30 de Abril de 2026</strong>.</p>
@@ -326,10 +354,12 @@
                 </table>
 
                 <p class="pdf-page-num">1</p>
+               </div>
               </div>
 
               <!-- Página 2 -->
               <div class="pdf-page" data-page="2">
+               <div class="pdf-page-content">
                 <h2>Términos y condiciones del<br>servicio de firma digital</h2>
 
                 <p>Al suscribir el presente documento, el firmante declara conocer y aceptar en su totalidad los términos y condiciones del servicio de firma digital emitido por <strong>FID by Lakaut</strong>.</p>
@@ -343,6 +373,7 @@
                 <p>Para más información sobre el uso de la firma digital, consulte la guía disponible en el portal del servicio o comuníquese con el equipo de soporte.</p>
 
                 <p class="pdf-page-num">2</p>
+               </div>
               </div>
 
             </div>
@@ -360,13 +391,15 @@
 
         <!-- Zoom -->
         <div class="viewer__toolbar">
-          <button class="pdf-ctrl-btn" id="btn-zoom-out" aria-label="Alejar">
-            <span class="icon">remove</span>
-          </button>
-          <span class="pdf-ctrl-chip" id="zoom-label">100%</span>
-          <button class="pdf-ctrl-btn" id="btn-zoom-in" aria-label="Acercar">
-            <span class="icon">add</span>
-          </button>
+          <div class="toolbar-group">
+            <button class="pdf-ctrl-btn" id="btn-zoom-out" aria-label="Alejar">
+              <span class="icon">remove</span>
+            </button>
+            <span class="pdf-ctrl-chip" id="zoom-label">100%</span>
+            <button class="pdf-ctrl-btn" id="btn-zoom-in" aria-label="Acercar">
+              <span class="icon">add</span>
+            </button>
+          </div>
         </div>
 
       </div><!-- /.viewer -->
@@ -388,6 +421,7 @@
                 <p class="tooltip__detail" id="tooltip-detail">Te falta revisar 2 páginas.</p>
               </div>
             </div>
+            <div class="tooltip__arrow"></div>
           </div>
         </div>
       </div>
@@ -442,6 +476,7 @@
   const total          = pages.length;
 
   const progress       = document.getElementById('progress');
+  const progressIcon   = document.getElementById('progress-icon');
   const progressLabel  = document.getElementById('progress-label');
   const progressCount  = document.getElementById('progress-count');
   const progressBar    = document.getElementById('progress-bar');
@@ -458,7 +493,7 @@
   const btnZoomIn      = document.getElementById('btn-zoom-in');
   const btnZoomOut     = document.getElementById('btn-zoom-out');
 
-  const ZOOM_STEPS = [50, 75, 100, 125, 150, 175, 200];
+  const ZOOM_STEPS = [50, 75, 100, 125, 150, 200];
   const TOOLTIP_TIMEOUT = 4000;
   const PULSE_MS = 600;
 
@@ -482,6 +517,7 @@
     const missing = total - done;
     const state = done === 0 ? 'sin-leer' : missing === 0 ? 'completo' : 'en-progreso';
     progress.dataset.state = state;
+    progressIcon.textContent = state === 'completo' ? 'check_circle' : 'description';
 
     if (state === 'completo') setProgress(1);
     progressCount.textContent = `${done} de ${total} ${plural(total, 'página', 'páginas')}`;
@@ -599,6 +635,7 @@
     btnZoomIn.disabled = zoomIndex === ZOOM_STEPS.length - 1;
     const newMax = scroll.scrollHeight - scroll.clientHeight;
     scroll.scrollTop = pos * newMax;
+    scroll.scrollLeft = (scroll.scrollWidth - scroll.clientWidth) / 2;
     checkReviewed();
     updateScrollbar();
   }
@@ -647,11 +684,15 @@
   });
 
   /* ── Init ── */
-  renderStamps();
-  renderProgress();
-  setZoom(zoomIndex);
-  scroll.scrollTop = 0;
-  updateScrollbar();
+  function init() {
+    renderStamps();
+    renderProgress();
+    setZoom(zoomIndex);
+    scroll.scrollTop = 0;
+    updateScrollbar();
+  }
+  init();
+  if (document.fonts) document.fonts.ready.then(updateScrollbar);
   window.addEventListener('resize', () => { checkReviewed(); updateScrollbar(); });
 </script>
 </body>
