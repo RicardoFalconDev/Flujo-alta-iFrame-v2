@@ -668,12 +668,13 @@
      footer) en vez de document.body.scrollHeight: ese proyecto no tiene la
      regla compartida ".page{min-height:100vh}" que usa el resto de este
      sitio, y con ella body.scrollHeight nunca baja del alto de la ventana. */
-  const header     = document.querySelector('.header');
-  const contentEl  = document.querySelector('.content-area');
-  const mainCardEl = document.querySelector('.main-card');
-  const cardFooter = document.querySelector('.card-footer');
-  const btnRowEl   = document.querySelector('.btn-row');
-  const viewerEl   = document.querySelector('.viewer');
+  const header       = document.querySelector('.header');
+  const contentEl    = document.querySelector('.content-area');
+  const mainCardEl   = document.querySelector('.main-card');
+  const cardFooter   = document.querySelector('.card-footer');
+  const btnRowEl     = document.querySelector('.btn-row');
+  const viewerHeader = document.querySelector('.viewer__header');
+  const viewerToolbar = document.querySelector('.viewer__toolbar');
 
   const VIEWPORT_MIN = 240;
   const VIEWPORT_ABSOLUTE_MIN = 120;
@@ -686,6 +687,8 @@
       + parseFloat(caCs.paddingTop) + parseFloat(caCs.paddingBottom)
       + parseFloat(mcCs.paddingTop) + parseFloat(mcCs.paddingBottom)
       + gap * 2 /* sr-only→viewer, viewer→btn-row */
+      + viewerHeader.offsetHeight /* barra de progreso, arriba del scroll */
+      + viewerToolbar.offsetHeight /* controles de zoom, abajo del scroll */
       + btnRowEl.offsetHeight
       + cardFooter.offsetHeight;
     const available = window.innerHeight - chrome;
