@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Revisá el documento | FID by Lakaut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/header.css" />
+  <link rel="stylesheet" href="assets/css/buttons.css" />
+
+  <style>
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; overflow: hidden;
+      clip: rect(0 0 0 0); white-space: nowrap;
+    }
+
+    /* ─── VISOR ──────────────────────────────────────────────── */
+    .viewer {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+    }
+
+    /* ── Header: indicador de progreso de lectura ── */
+    .viewer__header {
+      display: flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 12px 16px 13px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e5e7eb;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .progress { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; border-radius: 6px; transition: background-color .2s, box-shadow .2s; }
+    .progress__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .progress__message { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .progress__message .icon { font-size: 16px; color: var(--text-help); flex-shrink: 0; }
+    .progress__label { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; line-height: 18px; color: var(--text-dark); }
+    .progress__count { flex-shrink: 0; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 17px; color: var(--text-help); }
+    .progress[data-state="completo"] .progress__message .icon { color: #0d6d64; }
+    .progress[data-state="completo"] .progress__count { color: var(--text-dark); }
+
+    .progress__bar { position: relative; height: 4px; overflow: hidden; border-radius: 2px; background: #e5e7eb; }
+    .progress__fill {
+      position: absolute; inset: 0;
+      background: var(--blue);
+      transform: scaleX(var(--fill, 0));
+      transform-origin: left center;
+      transition: transform .12s linear;
+    }
+    .progress[data-state="completo"] .progress__fill { transform: scaleX(1); transition: transform .3s ease-out; }
+
+    .progress.is-pulsing { animation: progress-pulse .6s ease-out; }
+    @keyframes progress-pulse {
+      0%   { background: transparent; box-shadow: 0 0 0 0 transparent; }
+      30%  { background: #eef0fd; box-shadow: 0 0 0 6px #eef0fd, 0 0 0 8px var(--blue); }
+      100% { background: transparent; box-shadow: 0 0 0 6px transparent, 0 0 0 8px transparent; }
+    }
+
+    /* ── Área del documento ── */
+    .viewer__body { position: relative; background: #f8f9fa; }
+    .viewer__scroll {
+      height: 540px;
+      overflow: auto;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      scrollbar-width: none;
+      outline: none;
+    }
+    .viewer__scroll::-webkit-scrollbar { display: none; }
+
+    .viewer__pages { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 460px; }
+
+    .pdf-page {
+      background: #fff;
+      border: .5px solid #dee2e6;
+      border-radius: 2px;
+      padding: 40px 44px 56px;
+      font-family: 'Inter', sans-serif;
+      font-size: calc(11.5px * var(--zoom, 1));
+      line-height: 1.65;
+      color: #1a1a1a;
+    }
+
+    .pdf-page h2 { font-family: 'Inter', sans-serif; font-size: 1.2em; font-weight: 700; line-height: 1.4; margin-bottom: 20px; color: #0b0c0e; }
+    .pdf-page p { margin-bottom: 12px; }
+    .pdf-page strong { font-weight: 700; }
+    .pdf-page .section-title { font-weight: 700; margin-top: 28px; margin-bottom: 8px; }
+
+    .pdf-signature-table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin-top: 8px; }
+    .pdf-signature-table td, .pdf-signature-table th { border: 1px solid #bbb; padding: 5px 8px; vertical-align: top; }
+    .pdf-signature-table .sig-cell { height: 80px; padding: 6px; vertical-align: middle; }
+
+    .sig-stamp { width: 100%; height: 100%; border: 1px dashed; border-radius: 4px; position: relative; overflow: hidden; min-height: 66px; }
+    .sig-stamp-card { position: absolute; inset: 0; border-left: 4px solid; display: flex; align-items: center; justify-content: center; padding: 8px 16px; box-shadow: 0 4px 5px rgba(0,0,0,0.10); }
+    .sig-stamp-name { font-size: 1.05em; font-weight: 600; font-family: 'Inter', sans-serif; text-align: center; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .pdf-page-num { text-align: center; font-size: 0.85em; color: #aaa; margin-top: 24px; }
+
+    /* ── Scrollbar custom ── */
+    .scrollbar {
+      position: absolute;
+      top: 16px;
+      right: 11px;
+      width: 16px;
+      height: calc(540px - 32px);
+      padding: 4px;
+      background: #fff;
+      border: .5px solid #dee2e6;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .scrollbar__thumb {
+      width: 100%;
+      min-height: 40px;
+      border-radius: 8px;
+      background: #898999;
+      opacity: .6;
+      box-shadow: 0 4px 4px rgba(72,70,82,.05), 0 1px 2px rgba(72,70,82,.05);
+      cursor: grab;
+    }
+    .scrollbar.is-dragging .scrollbar__thumb { cursor: grabbing; opacity: .8; }
+
+    /* ── Chip "Ir al final del documento" ── */
+    .chip {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px 8px 14px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 19px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      filter: drop-shadow(0 4px 6px rgba(26,31,102,.25));
+      transition: opacity .2s, transform .2s;
+    }
+    .chip .icon { font-size: 16px; }
+    .chip:hover { opacity: .92; }
+    .chip.is-hidden { opacity: 0; transform: translate(-50%, 8px); pointer-events: none; }
+
+    /* ── Toolbar inferior (zoom) ── */
+    .viewer__toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 36px;
+      padding: 13px 16px 12px;
+      background: #f8f9fa;
+      border-top: 1px solid #e5e7eb;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .pdf-ctrl-btn {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px; color: #364153;
+      transition: background .12s;
+      flex-shrink: 0;
+    }
+    .pdf-ctrl-btn:hover { background: rgba(0,0,0,.06); }
+    .pdf-ctrl-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .pdf-ctrl-btn:disabled:hover { background: none; }
+    .pdf-ctrl-btn .icon { font-size: 20px; }
+
+    .pdf-ctrl-chip {
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
+      height: 28px; min-width: 52px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Inter', sans-serif; font-weight: 500; font-size: 12px; color: #212121;
+      padding: 0 10px; user-select: none;
+    }
+
+    /* ─── BOTONES ─────────────────────────────────────────── */
+    .btn-row { margin-top: 24px; }
+    .btn-rechazar { flex: 1; }
+    .btn-firmar {
+      width: 256px;
+      flex-shrink: 0;
+      /* .btn-submit usa pointer-events:none mientras está inactivo; acá lo
+         necesitamos interactivo igual para poder mostrar el tooltip de
+         "firma bloqueada" al pasar el mouse o hacer click. */
+      pointer-events: auto;
+    }
+    .btn-firmar:not(.active) { cursor: not-allowed; }
+
+    /* ─── Tooltip · Firma bloqueada ──────────────────────── */
+    .sign-wrap { position: relative; }
+    .tooltip {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 6px);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      transform: translateY(4px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
+    }
+    .tooltip.is-visible { opacity: 1; visibility: visible; transform: translateY(0); transition: opacity .15s ease, transform .15s ease; }
+    .tooltip__body {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 10px 12px;
+      background: #16181d;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.16);
+      white-space: nowrap;
+    }
+    .tooltip__body .icon { font-size: 16px; color: #fff; flex-shrink: 0; margin-top: 1.5px; }
+    .tooltip__text { display: flex; flex-direction: column; gap: 2px; }
+    .tooltip__title { font-family: 'Inter', sans-serif; font-size: 13px; line-height: 19px; font-weight: 600; color: #fff; }
+    .tooltip__detail { font-family: 'Inter', sans-serif; font-size: 12px; line-height: 17px; color: #ccd1db; }
+
+    @media (max-width: 640px) {
+      .viewer__scroll { height: 360px; padding: 16px 16px 16px 8px; }
+      .pdf-page { padding: 24px 20px 36px; }
+      .scrollbar { height: calc(360px - 32px); right: 5px; width: 12px; padding: 2px; }
+      .chip { bottom: 10px; }
+      .btn-row { flex-direction: column-reverse; gap: 8px; margin-top: auto; }
+      .btn-rechazar { flex: none; width: 100%; }
+      .btn-firmar { width: 100%; }
+      .tooltip { left: 0; right: 0; align-items: center; }
+      .tooltip__body { width: 100%; white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img class="header-logo"
+         src="assets/icons/logo-fid.svg"
+         alt="FID by Lakaut"
+         width="55" height="38" />
+    <span class="header-title"><span class="header-title-skeleton"></span></span>
+    <button class="icon-btn" aria-label="Cerrar" onclick="window.location.href='index.html'">
+      <span class="icon">close</span>
+    </button>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <main class="content-area">
+  <div class="card-wrap">
+    <div class="main-card">
+
+      <h1 class="sr-only">Revisá el documento</h1>
+
+      <!-- Visor -->
+      <div class="viewer">
+
+        <!-- Indicador de progreso -->
+        <div class="viewer__header">
+          <div class="progress" id="progress" data-state="sin-leer">
+            <div class="progress__row">
+              <div class="progress__message">
+                <span class="icon" id="progress-icon">description</span>
+                <p class="progress__label" id="progress-label">Revisá el documento para habilitar la firma</p>
+              </div>
+              <p class="progress__count" id="progress-count">0 de 2 páginas</p>
+            </div>
+            <div class="progress__bar" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <!-- Documento -->
+        <div class="viewer__body">
+          <div class="viewer__scroll" id="scroll" tabindex="0" aria-label="Documento: Autorización para retiro de pertenencias">
+            <div class="viewer__pages" id="pdf-pages">
+
+              <!-- Página 1 -->
+              <div class="pdf-page" data-page="1">
+                <h2>Autorización para retiro de<br>pertenencias</h2>
+
+                <p>Esta autorización tiene validez desde el día <strong>16 de Abril de 2026</strong> hasta el día <strong>30 de Abril de 2026</strong>.</p>
+
+                <p>Para cualquier consulta, pueden contactarme al número telefónico <strong>(11) 4567-8901</strong> o al correo electrónico <strong>ana.torres@mailfalso.com</strong>.</p>
+
+                <p>Se adjunta copia de mi documento de identidad para verificación:<br><strong>DNI_Ana_Torres_Copia.pdf</strong></p>
+
+                <p>En fe de lo cual, firmo la presente en <strong>Buenos Aires</strong>, a los <strong>16 de Abril de 2026</strong>.</p>
+
+                <p class="section-title">Área de Firmas</p>
+                <table class="pdf-signature-table">
+                  <tr>
+                    <th>Autorizante:</th>
+                    <th>Autorizado:</th>
+                  </tr>
+                  <tr>
+                    <td>Firma: (Firma de Ana Torres)</td>
+                    <td>Firma: (Firma de Ricardo Gómez)</td>
+                  </tr>
+                  <tr>
+                    <td class="sig-cell"></td>
+                    <td class="sig-cell"></td>
+                  </tr>
+                  <tr>
+                    <td>Aclaración: Ana María Torres Soto</td>
+                    <td>Aclaración: Ricardo Gómez Pérez</td>
+                  </tr>
+                  <tr>
+                    <td>Documento de Identidad: 45.876.123</td>
+                    <td>Documento de Identidad: 18.345.678</td>
+                  </tr>
+                </table>
+
+                <p class="pdf-page-num">1</p>
+              </div>
+
+              <!-- Página 2 -->
+              <div class="pdf-page" data-page="2">
+                <h2>Términos y condiciones del<br>servicio de firma digital</h2>
+
+                <p>Al suscribir el presente documento, el firmante declara conocer y aceptar en su totalidad los términos y condiciones del servicio de firma digital emitido por <strong>FID by Lakaut</strong>.</p>
+
+                <p>La firma digital es un mecanismo criptográfico que permite verificar la autenticidad e integridad del documento firmado, con validez legal conforme a la legislación vigente.</p>
+
+                <p>El titular es responsable de la custodia de su clave de firma y de los documentos firmados con ella. Cualquier uso no autorizado deberá reportarse de inmediato a través de los canales oficiales de soporte.</p>
+
+                <p>Este certificado digital ha sido emitido bajo estándares de seguridad nivel II, con vigencia de <strong>2 años</strong> a partir de la fecha de emisión. Al vencimiento, el titular podrá solicitar su renovación.</p>
+
+                <p>Para más información sobre el uso de la firma digital, consulte la guía disponible en el portal del servicio o comuníquese con el equipo de soporte.</p>
+
+                <p class="pdf-page-num">2</p>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="scrollbar" id="scrollbar">
+            <div class="scrollbar__thumb" id="scrollbar-thumb"></div>
+          </div>
+
+          <button type="button" class="chip" id="chip">
+            <span>Ir al final del documento</span>
+            <span class="icon">arrow_downward</span>
+          </button>
+        </div>
+
+        <!-- Zoom -->
+        <div class="viewer__toolbar">
+          <button class="pdf-ctrl-btn" id="btn-zoom-out" aria-label="Alejar">
+            <span class="icon">remove</span>
+          </button>
+          <span class="pdf-ctrl-chip" id="zoom-label">100%</span>
+          <button class="pdf-ctrl-btn" id="btn-zoom-in" aria-label="Acercar">
+            <span class="icon">add</span>
+          </button>
+        </div>
+
+      </div><!-- /.viewer -->
+
+      <!-- Botones -->
+      <div class="btn-row">
+        <button class="btn-outline btn-rechazar" onclick="window.location.href='rechazo-confirmar.html'">
+          <span>Rechazar documento</span>
+        </button>
+        <div class="sign-wrap">
+          <button class="btn-submit btn-firmar" id="btn-firmar">
+            <span>Firmar documento</span>
+          </button>
+          <div class="tooltip" id="tooltip">
+            <div class="tooltip__body">
+              <span class="icon">lock</span>
+              <div class="tooltip__text">
+                <p class="tooltip__title">Para firmar, hacé scroll hasta el final del documento</p>
+                <p class="tooltip__detail" id="tooltip-detail">Te falta revisar 2 páginas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.main-card -->
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <span class="powered-label">POWERED BY</span>
+      <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    </div>
+
+  </div><!-- /.card-wrap -->
+  </main>
+
+</div>
+
+<script>
+  /* ── Paleta de colores de estampas (igual que posicionar-firmas) ── */
+  const STAMP_PALETTES = [
+    { dash: '#4758e7', accent: '#255eb1', text: '#155dfc', bg: '#f3f8ff' },
+    { dash: '#10b981', accent: '#0f766e', text: '#0d6d64', bg: '#ecfdf5' },
+    { dash: '#7c3aed', accent: '#6025d1', text: '#6025d1', bg: '#faf5ff' },
+    { dash: '#d97706', accent: '#92400e', text: '#b45309', bg: '#fffbeb' },
+    { dash: '#e11d48', accent: '#9f1239', text: '#be123c', bg: '#fff1f2' },
+    { dash: '#0369a1', accent: '#075985', text: '#0369a1', bg: '#f0f9ff' },
+  ];
+
+  function renderStamps() {
+    const raw = sessionStorage.getItem('firmantes');
+    const firmantes = raw ? JSON.parse(raw) : [
+      { nombre: 'Firmador 1', email: 'firmador1@gmail.com' },
+      { nombre: 'Firmador 2', email: 'firmador2@gmail.com' },
+    ];
+    const sigCells = document.querySelectorAll('.sig-cell');
+    firmantes.forEach((f, i) => {
+      if (!sigCells[i]) return;
+      const pal  = STAMP_PALETTES[i % STAMP_PALETTES.length];
+      const name = f.nombre || f.email.split('@')[0];
+      sigCells[i].innerHTML = `
+        <div class="sig-stamp" style="border-color:${pal.dash};">
+          <div class="sig-stamp-card" style="background:${pal.bg};border-left-color:${pal.accent};">
+            <span class="sig-stamp-name" style="color:${pal.text};">${name}</span>
+          </div>
+        </div>`;
+    });
+  }
+
+  /* ── Referencias ── */
+  const scroll        = document.getElementById('scroll');
+  const pages          = [...document.querySelectorAll('.pdf-page')];
+  const total          = pages.length;
+
+  const progress       = document.getElementById('progress');
+  const progressLabel  = document.getElementById('progress-label');
+  const progressCount  = document.getElementById('progress-count');
+  const progressBar    = document.getElementById('progress-bar');
+
+  const chip           = document.getElementById('chip');
+  const btnFirmar      = document.getElementById('btn-firmar');
+  const tooltip        = document.getElementById('tooltip');
+  const tooltipDetail  = document.getElementById('tooltip-detail');
+
+  const scrollbar      = document.getElementById('scrollbar');
+  const thumb          = document.getElementById('scrollbar-thumb');
+
+  const zoomLabel      = document.getElementById('zoom-label');
+  const btnZoomIn      = document.getElementById('btn-zoom-in');
+  const btnZoomOut     = document.getElementById('btn-zoom-out');
+
+  const ZOOM_STEPS = [50, 75, 100, 125, 150, 175, 200];
+  const TOOLTIP_TIMEOUT = 4000;
+  const PULSE_MS = 600;
+
+  const reviewed = new Set();
+  let zoomIndex = ZOOM_STEPS.indexOf(100);
+  let tooltipTimer = null;
+  let tooltipPinned = false;
+  let readProgress = 0;
+
+  const plural = (n, one, many) => (n === 1 ? one : many);
+  const isComplete = () => reviewed.size === total;
+
+  /* ── Progreso ── */
+  function setProgress(value) {
+    readProgress = Math.max(readProgress, Math.min(1, value));
+    progressBar.style.setProperty('--fill', readProgress);
+  }
+
+  function renderProgress() {
+    const done = reviewed.size;
+    const missing = total - done;
+    const state = done === 0 ? 'sin-leer' : missing === 0 ? 'completo' : 'en-progreso';
+    progress.dataset.state = state;
+
+    if (state === 'completo') setProgress(1);
+    progressCount.textContent = `${done} de ${total} ${plural(total, 'página', 'páginas')}`;
+
+    if (state === 'sin-leer') {
+      progressLabel.textContent = 'Revisá el documento para habilitar la firma';
+    } else if (state === 'en-progreso') {
+      progressLabel.textContent = `Te falta revisar ${missing} ${plural(missing, 'página', 'páginas')} para habilitar la firma`;
+    } else {
+      progressLabel.textContent = 'Revisaste todo el documento. Ya podés firmar.';
+    }
+
+    tooltipDetail.textContent = `Te falta revisar ${missing} ${plural(missing, 'página', 'páginas')}.`;
+  }
+
+  function markReviewed(page) {
+    if (reviewed.has(page)) return;
+    const wasComplete = isComplete();
+    reviewed.add(page);
+    renderProgress();
+    if (!wasComplete && isComplete()) onComplete();
+  }
+
+  function onComplete() {
+    btnFirmar.classList.add('active');
+    hideTooltip();
+    chip.classList.add('is-hidden');
+    chip.tabIndex = -1;
+  }
+
+  /* ── Seguimiento de lectura ── */
+  function checkReviewed() {
+    const maxScroll = scroll.scrollHeight - scroll.clientHeight;
+    if (maxScroll <= 2) {
+      pages.forEach((_, i) => markReviewed(i + 1));
+      return;
+    }
+    const atEnd = scroll.scrollTop >= maxScroll - 2;
+    const progressTotal = atEnd ? 1 : scroll.scrollTop / maxScroll;
+    const heights = pages.map(p => p.offsetHeight);
+    const totalH = heights.reduce((a, b) => a + b, 0);
+    setProgress(progressTotal);
+    let upTo = 0;
+    heights.forEach((h, i) => {
+      upTo += h;
+      if (readProgress * totalH >= upTo - 0.5) markReviewed(i + 1);
+    });
+  }
+
+  /* ── Scrollbar custom ── */
+  function trackPadding() {
+    const cs = getComputedStyle(scrollbar);
+    return parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  }
+
+  function updateScrollbar() {
+    const trackH = scrollbar.clientHeight - trackPadding();
+    const ratio = scroll.clientHeight / scroll.scrollHeight;
+    const thumbH = Math.max(40, Math.round(trackH * Math.min(1, ratio)));
+    const maxScroll = scroll.scrollHeight - scroll.clientHeight;
+    const y = maxScroll > 0 ? (scroll.scrollTop / maxScroll) * (trackH - thumbH) : 0;
+    thumb.style.height = `${thumbH}px`;
+    thumb.style.transform = `translateY(${y}px)`;
+    scrollbar.style.visibility = ratio >= 1 ? 'hidden' : 'visible';
+  }
+
+  let drag = null;
+  thumb.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    thumb.setPointerCapture(e.pointerId);
+    scrollbar.classList.add('is-dragging');
+    drag = { y: e.clientY, top: scroll.scrollTop };
+  });
+  thumb.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const trackH = scrollbar.clientHeight - trackPadding() - thumb.offsetHeight;
+    const maxScroll = scroll.scrollHeight - scroll.clientHeight;
+    scroll.scrollTop = drag.top + ((e.clientY - drag.y) / trackH) * maxScroll;
+  });
+  const endDrag = () => { drag = null; scrollbar.classList.remove('is-dragging'); };
+  thumb.addEventListener('pointerup', endDrag);
+  thumb.addEventListener('pointercancel', endDrag);
+  scrollbar.addEventListener('pointerdown', (e) => {
+    if (e.target === thumb) return;
+    const rect = scrollbar.getBoundingClientRect();
+    const ratio = (e.clientY - rect.top) / rect.height;
+    scroll.scrollTo({ top: ratio * (scroll.scrollHeight - scroll.clientHeight), behavior: 'smooth' });
+  });
+
+  /* ── Scroll ── */
+  let raf = 0;
+  scroll.addEventListener('scroll', () => {
+    if (tooltipPinned) hideTooltip();
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      checkReviewed();
+      updateScrollbar();
+    });
+  });
+
+  /* ── Chip ── */
+  chip.addEventListener('click', () => {
+    scroll.scrollTo({ top: scroll.scrollHeight, behavior: 'smooth' });
+  });
+
+  /* ── Zoom (no reinicia el progreso) ── */
+  function setZoom(index) {
+    zoomIndex = Math.max(0, Math.min(ZOOM_STEPS.length - 1, index));
+    const maxScroll = scroll.scrollHeight - scroll.clientHeight;
+    const pos = maxScroll > 0 ? scroll.scrollTop / maxScroll : 0;
+    const z = ZOOM_STEPS[zoomIndex];
+    document.documentElement.style.setProperty('--zoom', z / 100);
+    zoomLabel.textContent = `${z}%`;
+    btnZoomOut.disabled = zoomIndex === 0;
+    btnZoomIn.disabled = zoomIndex === ZOOM_STEPS.length - 1;
+    const newMax = scroll.scrollHeight - scroll.clientHeight;
+    scroll.scrollTop = pos * newMax;
+    checkReviewed();
+    updateScrollbar();
+  }
+  btnZoomIn.addEventListener('click', () => setZoom(zoomIndex + 1));
+  btnZoomOut.addEventListener('click', () => setZoom(zoomIndex - 1));
+
+  /* ── Tooltip + botón Firmar ── */
+  function showTooltip(pinned) {
+    if (isComplete()) return;
+    tooltip.classList.add('is-visible');
+    if (pinned) {
+      tooltipPinned = true;
+      clearTimeout(tooltipTimer);
+      tooltipTimer = setTimeout(hideTooltip, TOOLTIP_TIMEOUT);
+    }
+  }
+  function hideTooltip() {
+    tooltipPinned = false;
+    clearTimeout(tooltipTimer);
+    tooltip.classList.remove('is-visible');
+  }
+
+  function pulseProgress() {
+    progress.classList.remove('is-pulsing');
+    void progress.offsetWidth;
+    progress.classList.add('is-pulsing');
+    setTimeout(() => progress.classList.remove('is-pulsing'), PULSE_MS);
+  }
+
+  btnFirmar.addEventListener('mouseenter', () => showTooltip(false));
+  btnFirmar.addEventListener('mouseleave', () => { if (!tooltipPinned) hideTooltip(); });
+  btnFirmar.addEventListener('focus', () => showTooltip(false));
+  btnFirmar.addEventListener('blur', () => { if (!tooltipPinned) hideTooltip(); });
+
+  btnFirmar.addEventListener('click', () => {
+    if (!isComplete()) {
+      showTooltip(true);
+      pulseProgress();
+      return;
+    }
+    window.location.href = 'confirmar-firma.html';
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideTooltip();
+  });
+
+  /* ── Init ── */
+  renderStamps();
+  renderProgress();
+  setZoom(zoomIndex);
+  scroll.scrollTop = 0;
+  updateScrollbar();
+  window.addEventListener('resize', () => { checkReviewed(); updateScrollbar(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* ─── Header del flujo (paso1–4, otp, editar-datos) ─────── */
+
+.header {
+  height: 80px;
+  background: #fff;
+  border-bottom: 1px solid var(--border-hdr);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+.header-logo {
+  width: 46px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.header-title {
+  flex: 1;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--text-main);
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+
+.header-title-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title-skeleton::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #e8e8e8;
+  flex-shrink: 0;
+}
+
+.header-title-skeleton::after {
+  content: '';
+  display: block;
+  width: 120px;
+  height: 14px;
+  border-radius: 6px;
+  background: #e8e8e8;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-main);
+  transition: background .15s;
+}
+
+.icon-btn:hover { background: var(--btn-outline-hover); }
+.icon-btn .icon { font-size: 20px; }
+
+/* ─── Layout interior compartido ───────────────────────── */
+.content-area {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+}
+
+.main-card {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--border-card);
+  border-radius: 12px 12px 0 0;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card-footer {
+  width: 100%;
+  background: #f9f9ff;
+  border: 1px solid var(--border-card);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.card-footer .powered-label {
+  font-size: 10px;
+  line-height: 14px;
+  color: #3b3a45;
+  letter-spacing: 0.1px;
+  font-weight: 400;
+}
+
+.card-footer .powered-logo {
+  height: 16px;
+  width: auto;
+  display: block;
+}
+
+.title-section { display: flex; flex-direction: column; gap: 8px; }
+
+.card-title {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--text-dark);
+}
+
+.card-subtitle {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-sub);
+  letter-spacing: 0.1px;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+
+/* ─── RESPONSIVE ≤ 768px — header mobile ───────────── */
+@media (max-width: 768px) {
+  /* Altura 72px, sin logo, gap 8px */
+  .header {
+    height: 72px;
+    padding: 16px 24px;
+    gap: 8px;
+  }
+
+  .header-logo { display: none; }
+
+  /* Iconos: quitar borde circular y fondo — patrón Flujo Empresas */
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+  }
+
+  .icon-btn .icon { font-size: 24px; }
+
+  /* Título centrado */
+  .header-title { text-align: center; }
+}
+
+/* ─── RESPONSIVE ≤ 640px — layout cards ────────────── */
+@media (max-width: 640px) {
+  .content-area {
+    padding: 16px 16px 0;
+    align-items: stretch;
+  }
+
+  .card-wrap {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  .main-card {
+    flex: 1;
+    padding: 16px 16px 24px;
+  }
+
+  .title-section { gap: 6px; }
+  .card-title { font-size: 16px; line-height: 28px; }
+  .card-subtitle { font-size: 14px; line-height: 20px; }
+}

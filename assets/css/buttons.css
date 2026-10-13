@@ -1,0 +1,205 @@
+/* ─── Botones — FID by Lakaut ────────────────────────────────
+   Todas las variantes del sistema de diseño.
+   Las páginas sobreescriben solo sizing/layout (flex, width, etc.)
+──────────────────────────────────────────────────────────── */
+
+/* Contenedor de botones en par */
+.btn-row {
+  display: flex;
+  gap: 24px;
+}
+
+/* ── Primary (activo siempre) ────────────────────────────── */
+.btn-primary {
+  height: 48px;
+  background: var(--blue);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  transition: opacity .15s;
+}
+
+.btn-primary:hover { opacity: .9; }
+
+.btn-primary span {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #fff;
+}
+
+/* ── Outline ─────────────────────────────────────────────── */
+.btn-outline,
+.btn-back {
+  height: 48px;
+  background: #fff;
+  border: 1px solid #e1e1e6;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  transition: background .15s;
+}
+
+.btn-outline:hover,
+.btn-back:hover { background: var(--btn-outline-hover); }
+
+.btn-outline span,
+.btn-back span {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #494949;
+}
+
+/* ── Disabled → Active (btn-submit / btn-continue) ──────── */
+.btn-submit,
+.btn-continue {
+  height: 48px;
+  background: var(--btn-disabled-bg);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  cursor: not-allowed;
+  pointer-events: none;
+  transition: background .15s;
+}
+
+.btn-submit.active,
+.btn-continue.active {
+  background: var(--blue);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.btn-submit.active:hover,
+.btn-continue.active:hover { opacity: .9; }
+
+.btn-submit span,
+.btn-continue span {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--btn-disabled-text);
+  transition: color .15s;
+}
+
+.btn-submit.active span,
+.btn-continue.active span { color: #fff; }
+
+/* ── Danger (acción destructiva) ──────────────────────────── */
+.btn-danger {
+  height: 48px;
+  background: var(--danger);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  transition: opacity .15s;
+}
+
+.btn-danger:hover { opacity: .9; }
+
+.btn-danger span {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #fff;
+}
+
+/* ── Ghost / texto ───────────────────────────────────────── */
+.btn-ghost {
+  height: 48px;
+  color: var(--blue);
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  transition: background .15s;
+}
+
+.btn-ghost:hover { background: rgba(42,57,208,.06); }
+
+/* ── Resend OTP (outline con opacity disabled) ───────────── */
+.btn-resend {
+  flex: 1;
+  height: 48px;
+  background: #fff;
+  border: 1px solid #e1e1e6;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  opacity: 0.5;
+  cursor: not-allowed;
+  transition: background .15s, border-color .15s, opacity .15s;
+}
+
+.btn-resend.active {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.btn-resend.active:hover { background: var(--btn-outline-hover); }
+
+.btn-resend span {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #494949;
+}
+
+/* ── Inicio / CTA link (paso4) ───────────────────────────── */
+.btn-inicio {
+  height: 48px;
+  background: var(--blue);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  transition: opacity .15s;
+  text-decoration: none;
+}
+
+.btn-inicio:hover { opacity: .9; }
+
+.btn-inicio span {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #fff;
+}
+
+/* ── Submit row (paso1) ──────────────────────────────────── */
+.submit-row {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Responsive: btn-row apila con primario arriba ───────── */
+@media (max-width: 640px) {
+  .btn-row {
+    flex-direction: column-reverse;
+  }
+  .btn-row > * {
+    width: 100%;
+    flex: none;
+  }
+}

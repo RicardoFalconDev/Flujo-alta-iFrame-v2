@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Generar nueva clave de firma | FID by Lakaut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/header.css" />
+  <link rel="stylesheet" href="assets/css/buttons.css" />
+
+  <style>
+    /* ─── BANNER ADVERTENCIA ─────────────────────────── */
+    .warning-banner {
+      background: var(--warning-bg);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .warning-icon {
+      font-size: 20px;
+      color: var(--warning-icon);
+      flex-shrink: 0;
+      font-variation-settings: 'FILL' 1;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .warning-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      line-height: 20px;
+      color: var(--text-help);
+    }
+
+    .warning-text strong { font-weight: 700; }
+
+    /* ─── CHECKBOX (mismo patrón que inicio.html) ───── */
+    .tyc-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .tyc-checkbox {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .tyc-checkbox-inner {
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid #adb5bd;
+      border-radius: 6px;
+      background: #fff;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tyc-checkbox.on .tyc-checkbox-inner {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .tyc-checkbox.on .tyc-checkbox-inner::after {
+      content: '';
+      width: 11px;
+      height: 8px;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L4.5 7.5L11 1' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+
+    .tyc-text {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #212529;
+      flex: 1;
+    }
+
+    .form-body { display: flex; flex-direction: column; gap: 24px; }
+    .btn-confirm-row { display: flex; }
+    .main-card { gap: 16px; }
+
+    @media (max-width: 640px) {
+      .main-card { flex: 1; }
+      .form-body { flex: 1; }
+      .btn-row { margin-top: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img class="header-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" width="55" height="38" />
+    <span class="header-title"><span class="header-title-skeleton"></span></span>
+    <button class="icon-btn" aria-label="Cerrar" onclick="window.location.href='index.html'">
+      <span class="icon">close</span>
+    </button>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <main class="content-area">
+  <div class="card-wrap">
+    <div class="main-card">
+
+      <!-- Título -->
+      <div class="title-section">
+        <h2 class="card-title">¿Querés generar una nueva clave de firma?</h2>
+        <p class="card-subtitle">Para crear una nueva clave, primero tenés que revocar tu certificado digital actual y volver a verificar tu identidad.</p>
+      </div>
+
+      <div class="form-body">
+
+        <!-- Banner advertencia -->
+        <div class="warning-banner">
+          <span class="icon warning-icon">warning</span>
+          <p class="warning-text">
+            <strong>Esta acción revoca tu certificado digital actual</strong> y no se puede deshacer. Vas a tener que volver a verificar tu identidad para emitir uno nuevo.
+          </p>
+        </div>
+
+        <!-- Checkbox -->
+        <div class="tyc-row">
+          <button class="tyc-checkbox" id="tyc" aria-label="Aceptar">
+            <div class="tyc-checkbox-inner"></div>
+          </button>
+          <p class="tyc-text">Acepto eliminar mi clave de firma (revocar certificado digital).</p>
+        </div>
+
+        <!-- Botones -->
+        <div class="btn-row">
+          <button class="btn-outline" onclick="window.location.href='confirmar-firma.html'">
+            <span>Volver</span>
+          </button>
+          <button class="btn-submit" id="btn-continuar" onclick="continuar()">
+            <span>Continuar</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div><!-- /.main-card -->
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <span class="powered-label">POWERED BY</span>
+      <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    </div>
+
+  </div><!-- /.card-wrap -->
+  </main>
+
+</div>
+
+<script>
+  const tycBtn = document.getElementById('tyc');
+  const btnContinuar = document.getElementById('btn-continuar');
+
+  tycBtn.addEventListener('click', () => {
+    tycBtn.classList.toggle('on');
+    btnContinuar.classList.toggle('active', tycBtn.classList.contains('on'));
+  });
+
+  function continuar() {
+    if (!btnContinuar.classList.contains('active')) return;
+    window.location.href = 'clave-eliminada.html';
+  }
+</script>
+</body>
+</html>

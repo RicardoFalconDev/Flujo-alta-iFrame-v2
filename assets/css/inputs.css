@@ -1,0 +1,181 @@
+/* ─── Inputs y campos de formulario — FID by Lakaut ─────── */
+
+/* Grupo label + input */
+.field-group,
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Label */
+.field-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 26px;
+  color: #222;
+}
+
+/* Input base (texto, email, tel) */
+.input-wrap,
+.pass-input-wrap {
+  height: 56px;
+  border: 1px solid #dfdfdf;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  background: #fff;
+  transition: border-color .15s;
+}
+
+.input-wrap:focus-within,
+.pass-input-wrap:focus-within { border-color: var(--blue); }
+
+.input-wrap input,
+.pass-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 26px;
+  color: var(--text-main);
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.input-wrap input::placeholder,
+.pass-input-wrap input::placeholder { color: #c8ccdd; }
+
+/* Eye button */
+.eye-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  padding: 0;
+  margin-right: -4px;
+}
+
+.eye-btn .icon { font-size: 20px; }
+
+/* Ícono decorativo dentro del input */
+.input-icon {
+  color: #c0c0cc;
+  font-size: 20px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ─── SELECT — patrón Flujo Empresas ──────────────────── */
+
+/* Wrapper posicionador: actúa como el input-wrap para selects */
+.sel-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color .15s;
+}
+
+.sel-wrap:focus-within { border-color: var(--blue); }
+
+
+/* El select es el elemento visual: tiene su propio border/height/fondo */
+.field-select {
+  width: 100%;
+  height: 48px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0 36px 0 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--text-ph);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color .15s;
+  /* Chevron como background-image (más confiable que position:absolute sobre <select>) */
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%236c757d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.field-select:focus { border-color: var(--blue); }
+.field-select.selected { color: var(--text-main); }
+
+/* Cuando .field-select está dentro de .sel-wrap (patrón paso1), el wrapper provee el borde */
+.sel-wrap .field-select {
+  height: 46px;
+  background: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 8l5 5 5-5' stroke='%236c757d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  border: none;
+  border-radius: 0;
+}
+.sel-wrap .field-select:focus { border: none; }
+
+/* Helper text debajo del campo */
+.field-helper {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: #505050;
+  letter-spacing: 0.1px;
+}
+
+/* Requisitos de contraseña */
+.pw-reqs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pw-req {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: #505050;
+}
+
+.pw-req img { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* ─── RESPONSIVE ≤ 768px — inputs mobile ────────────── */
+@media (max-width: 768px) {
+  .input-wrap, .pass-input-wrap {
+    height: 48px;
+    padding: 0 16px;
+  }
+
+  .field-select {
+    font-size: 16px; /* evita zoom en iOS */
+    padding: 0 40px 0 16px;
+    background-position: right 14px center;
+  }
+
+  .input-wrap input,
+  .pass-input-wrap input {
+    font-size: 14px;
+  }
+}

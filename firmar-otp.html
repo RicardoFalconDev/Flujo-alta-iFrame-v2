@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Firmar documento | FID by Lakaut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/header.css" />
+  <link rel="stylesheet" href="assets/css/buttons.css" />
+
+  <style>
+    :root {
+      --otp-border: #d0d3df;
+      --otp-error:  #ef4444;
+      --otp-size:   72px;
+    }
+
+    /* ─── ILUSTRACIÓN ───────────────────────────────── */
+    .otp-illustration {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .otp-illustration img {
+      display: block;
+    }
+
+    /* ─── OTP BODY ───────────────────────────────────── */
+    .otp-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* ─── OTP GRID ───────────────────────────────────── */
+    .otp-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+    }
+
+    .otp-cell {
+      width: var(--otp-size);
+      height: var(--otp-size);
+      background: #fff;
+      border: 1.5px solid var(--otp-border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 22px;
+      color: var(--text-dark);
+      text-align: center;
+      outline: none;
+      caret-color: var(--blue);
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .otp-cell:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(42, 57, 208, 0.12);
+    }
+
+    .otp-grid.error .otp-cell {
+      border-color: var(--otp-error);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10);
+    }
+
+    .otp-grid.verified .otp-cell {
+      background: #f5f5f5;
+      border-color: var(--otp-border);
+      pointer-events: none;
+    }
+
+    /* ─── MENSAJES ───────────────────────────────────── */
+    .otp-timer {
+      font-size: 12px;
+      line-height: 16px;
+      color: #505050;
+      letter-spacing: 0.1px;
+      font-feature-settings: "lnum" 1, "tnum" 1;
+    }
+
+    .otp-timer.expired { color: var(--otp-error); }
+
+    .otp-error-msg {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--otp-error);
+    }
+
+    .otp-error-msg.visible { display: flex; }
+    .otp-error-msg .icon { font-size: 16px; }
+
+    .otp-verified-msg {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #006633;
+    }
+
+    .otp-verified-msg.visible { display: flex; }
+    .otp-verified-msg .icon { font-size: 20px; font-variation-settings: 'FILL' 1; }
+
+    /* ─── OTP INPUT WRAP ─────────────────────────────── */
+    .otp-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      margin-top: 54px;
+    }
+
+    /* ─── BOTONES ────────────────────────────────────── */
+    .btn-row { display: flex; gap: 16px; width: 100%; margin-top: 38px; }
+    #btn-resend { flex: 1; }
+    #btn-verify { flex: 1; }
+
+    /* spinner dentro del botón */
+    .btn-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* estado verificando: botón permanece azul pero no clickeable */
+    .btn-submit.verifying {
+      pointer-events: none;
+      opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      :root { --otp-size: 44px; }
+      .otp-grid { gap: 0; width: 100%; justify-content: space-between; }
+      .otp-cell { font-size: 16px; }
+      .otp-input-wrap { margin-top: 24px; }
+      .otp-body { flex: 1; }
+      .btn-row { margin-top: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img class="header-logo"
+         src="assets/icons/logo-fid.svg"
+         alt="FID by Lakaut"
+         width="55" height="38" />
+    <span class="header-title"><span class="header-title-skeleton"></span></span>
+    <button class="icon-btn" aria-label="Cerrar" onclick="window.location.href='index.html'">
+      <span class="icon">close</span>
+    </button>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <main class="content-area">
+  <div class="card-wrap">
+    <div class="main-card">
+
+      <!-- Ilustración -->
+      <div class="otp-illustration">
+        <img src="assets/images/otp-sms.svg" alt="" width="121" height="94" />
+      </div>
+
+      <!-- Título -->
+      <div class="title-section">
+        <h2 class="card-title">Ingresá el código que enviamos al +54 XXXXXXX 78.</h2>
+      </div>
+
+      <!-- OTP + mensajes + botones -->
+      <div class="otp-body">
+
+        <div class="otp-input-wrap">
+          <div class="otp-grid" id="otp-grid">
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+          </div>
+          <span class="otp-timer" id="otp-timer">El código vence en 2:00</span>
+          <span class="otp-verified-msg" id="otp-verified">
+            <span class="icon">check_circle</span>
+            Código verificado
+          </span>
+          <span class="otp-error-msg" id="otp-error">
+            <span class="icon">error</span>
+            El código ingresado es incorrecto.
+          </span>
+        </div>
+
+        <!-- Botones -->
+        <div class="btn-row">
+          <button class="btn-outline" id="btn-resend" onclick="reenviarCodigo()">
+            <span>Reenviar código</span>
+          </button>
+          <button class="btn-submit" id="btn-verify" onclick="verificar()">
+            <span>Verificar código</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="powered-label">POWERED BY</span>
+      <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    </div>
+  </div><!-- /.card-wrap -->
+  </main>
+
+</div>
+
+<script>
+  const grid      = document.getElementById('otp-grid');
+  const cells     = Array.from(grid.querySelectorAll('.otp-cell'));
+  const timerEl   = document.getElementById('otp-timer');
+  const errorEl   = document.getElementById('otp-error');
+  const verEl     = document.getElementById('otp-verified');
+  const btnResend = document.getElementById('btn-resend');
+  const btnVerify = document.getElementById('btn-verify');
+
+  let seconds = 120, timerInterval;
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    seconds = 120;
+    timerEl.classList.remove('expired');
+    btnResend.classList.remove('active');
+    timerInterval = setInterval(() => {
+      seconds--;
+      const m = Math.floor(seconds / 60);
+      const s = String(seconds % 60).padStart(2, '0');
+      timerEl.textContent = `El código vence en ${m}:${s}`;
+      if (seconds <= 0) {
+        clearInterval(timerInterval);
+        timerEl.textContent = 'El código ha vencido.';
+        timerEl.classList.add('expired');
+        btnResend.classList.add('active');
+      }
+    }, 1000);
+  }
+
+  cells.forEach((cell, i) => {
+    cell.addEventListener('input', () => {
+      cell.value = cell.value.replace(/\D/g, '').slice(-1);
+      errorEl.classList.remove('visible');
+      grid.classList.remove('error');
+      if (cell.value && i < cells.length - 1) cells[i + 1].focus();
+      const code = cells.map(c => c.value).join('');
+      if (code.length === 6) btnVerify.classList.add('active');
+      else btnVerify.classList.remove('active');
+    });
+    cell.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !cell.value && i > 0) cells[i - 1].focus();
+    });
+    cell.addEventListener('paste', e => {
+      const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+      if (!txt) return;
+      e.preventDefault();
+      txt.split('').forEach((ch, idx) => { if (cells[idx]) cells[idx].value = ch; });
+      cells[Math.min(txt.length, cells.length - 1)].focus();
+      if (txt.length === 6) btnVerify.classList.add('active');
+    });
+  });
+
+  function verificar() {
+    if (!btnVerify.classList.contains('active')) return;
+    const code = cells.map(c => c.value).join('');
+    if (code === '000000') {
+      grid.classList.add('error');
+      errorEl.classList.add('visible');
+      timerEl.style.display = 'none';
+    } else {
+      // Loading state
+      btnVerify.classList.add('verifying');
+      btnResend.setAttribute('disabled', '');
+      btnVerify.innerHTML = '<span class="btn-spinner" style="margin-right:8px"></span><span>Verificando</span>';
+      grid.classList.add('verified');
+      timerEl.style.display = 'none';
+      clearInterval(timerInterval);
+      setTimeout(() => window.location.href = 'firmar-documento.html', 1200);
+    }
+  }
+
+  function reenviarCodigo() {
+    cells.forEach(c => { c.value = ''; c.disabled = false; });
+    grid.classList.remove('error', 'verified');
+    errorEl.classList.remove('visible');
+    verEl.classList.remove('visible');
+    timerEl.style.display = '';
+    btnVerify.classList.remove('active');
+    startTimer();
+    cells[0].focus();
+  }
+
+  startTimer();
+  cells[0].focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+/* ─── Base — reset + tipografía + layout raíz ────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+img { display: block; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+a { text-decoration: none; color: inherit; }
+
+html {
+  min-height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
+body {
+  min-height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+}
+
+/* Material Symbols Outlined */
+.icon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* Wrapper de página */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+}

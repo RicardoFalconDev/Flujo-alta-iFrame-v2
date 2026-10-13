@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Validación de teléfono | FID by Lakaut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Montserrat:wght@500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/header.css" />
+  <link rel="stylesheet" href="assets/css/buttons.css" />
+
+  <style>
+    :root {
+      --otp-border: #d0d3df;
+      --otp-error:  #ef4444;
+      --otp-size:   72px;
+    }
+
+    /* ─── CARD PADDING ──────────────────────────────── */
+    .main-card { padding-top: 24px; }
+
+    /* ─── ILUSTRACIÓN ───────────────────────────────── */
+    .otp-illustration {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* ─── OTP BODY ───────────────────────────────────── */
+    .otp-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* ─── OTP GRID ───────────────────────────────────── */
+    .otp-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+    }
+
+    .otp-cell {
+      width: var(--otp-size);
+      height: var(--otp-size);
+      background: #fff;
+      border: 1.5px solid var(--otp-border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 22px;
+      color: var(--text-dark);
+      text-align: center;
+      outline: none;
+      caret-color: var(--blue);
+      transition: border-color .15s, box-shadow .15s;
+      /* Ocultar el caret real, mostramos cursor custom */
+    }
+
+    .otp-cell:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(42, 57, 208, 0.12);
+    }
+
+    /* Estado error */
+    .otp-grid.error .otp-cell {
+      border-color: var(--otp-error);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10);
+    }
+
+    .otp-grid.error .otp-cell:focus {
+      border-color: var(--otp-error);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    /* Estado verificado */
+    .otp-grid.verified .otp-cell {
+      background: #f5f5f5;
+      border-color: #006633;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    /* ─── MENSAJES BAJO EL GRID ──────────────────────── */
+    .otp-messages {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-height: 36px;
+    }
+
+    .otp-timer {
+      font-size: 13px;
+      line-height: 20px;
+      color: var(--text-ph);
+    }
+
+
+
+    .otp-timer.expired { color: var(--otp-error); }
+
+    .otp-error-msg {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      line-height: 20px;
+      color: var(--otp-error);
+    }
+
+    .otp-error-msg.visible { display: flex; }
+    .otp-error-msg .icon { font-size: 16px; }
+
+    .otp-verified-msg {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      line-height: 16px;
+      color: #006633;
+    }
+
+    .otp-verified-msg.visible { display: flex; }
+    .otp-verified-msg .icon { font-size: 20px; font-variation-settings: 'FILL' 1; }
+
+    /* ─── OTP INPUT WRAP (grid + helper verificado) ─── */
+    .otp-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      margin-top: 54px;
+    }
+
+    /* ─── BOTONES — sizing específico ───────────────── */
+    .btn-row { gap: 16px; width: 100%; margin-top: 38px; }
+
+    /* ─── BOTONES — sizing específico ───────────────── */
+    .btn-resend { flex: 1; }
+    .btn-continue { flex: 1; }
+
+    @media (max-width: 640px) {
+      .otp-grid { gap: 0; width: 100%; justify-content: space-between; }
+      .otp-cell { width: 44px; height: 44px; font-size: 16px; }
+      .otp-timer { font-size: 12px; line-height: 16px; color: #505050; }
+      .otp-input-wrap { margin-top: 24px; }
+      .otp-body { flex: 1; }
+      .btn-row { margin-top: auto; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img class="header-logo"
+         src="assets/icons/logo-fid.svg"
+         alt="FID by Lakaut"
+         width="55" height="38" />
+    <span class="header-title"><span class="header-title-skeleton"></span></span>
+    <button class="icon-btn" aria-label="Cerrar" onclick="window.location.href='index.html'">
+      <span class="icon">close</span>
+    </button>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <main class="content-area">
+<div class="card-wrap">
+    <div class="main-card">
+
+      <!-- Ilustración -->
+      <div class="otp-illustration">
+        <img src="assets/images/otp-sms.svg" alt="" width="121" height="94" />
+      </div>
+
+      <!-- Título -->
+      <div class="title-section" style="text-align:center;">
+        <h2 class="card-title">Ingresá el código de seguridad</h2>
+        <p class="card-subtitle">
+          Lo enviamos por SMS al <strong>+54 XXXXXXX 78</strong>.
+        </p>
+      </div>
+
+      <!-- OTP + mensajes + botones -->
+      <div class="otp-body">
+
+        <!-- Grid + helper verificado -->
+        <div class="otp-input-wrap">
+          <div class="otp-grid" id="otp-grid">
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+            <input class="otp-cell" type="text" inputmode="numeric" maxlength="1" />
+          </div>
+          <!-- Timer, error y verificado comparten la misma posición -->
+          <span class="otp-timer" id="otp-timer">El código vence en 2:00</span>
+          <span class="otp-verified-msg" id="otp-verified">
+            <span class="icon">check_circle</span>
+            Código verificado
+          </span>
+          <span class="otp-error-msg" id="otp-error">
+            <span class="icon">error</span>
+            El código ingresado es incorrecto. Volver a enviar.
+          </span>
+        </div>
+
+        <!-- Botones -->
+        <div class="btn-row">
+          <button class="btn-resend" id="btn-resend" onclick="reenviarCodigo()">
+            <span>Reenviar código</span>
+          </button>
+          <button class="btn-continue" id="btn-continue" onclick="continuar()">
+            <span>Continuar</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="powered-label">POWERED BY</span>
+      <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    </div>
+    </div><!-- /.card-wrap -->
+  </main>
+
+</div>
+
+<script>
+  /* ── Referencias ────────────────────────────────── */
+  const grid       = document.getElementById('otp-grid');
+  const cells      = Array.from(grid.querySelectorAll('.otp-cell'));
+  const timerEl    = document.getElementById('otp-timer');
+  const errorEl    = document.getElementById('otp-error');
+  const verifiedEl = document.getElementById('otp-verified');
+  const btnResend  = document.getElementById('btn-resend');
+  const btnCont    = document.getElementById('btn-continue');
+
+  /* ── Timer ──────────────────────────────────────── */
+  let seconds = 120;
+  let timerInterval;
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    seconds = 120;
+    timerEl.classList.remove('expired');
+    btnResend.classList.remove('active');
+
+    timerInterval = setInterval(() => {
+      seconds--;
+      const m = Math.floor(seconds / 60);
+      const s = String(seconds % 60).padStart(2, '0');
+      timerEl.textContent = `El código vence en ${m}:${s}`;
+
+      if (seconds <= 0) {
+        clearInterval(timerInterval);
+        timerEl.textContent = 'El código ha vencido.';
+        timerEl.classList.add('expired');
+        btnResend.classList.add('active');
+      }
+    }, 1000);
+  }
+
+  startTimer();
+
+  /* ── Estado ─────────────────────────────────────── */
+  function getValue() {
+    return cells.map(c => c.value).join('');
+  }
+
+  function setError(show) {
+    grid.classList.toggle('error', show);
+    errorEl.classList.toggle('visible', show);
+    timerEl.style.display = show ? 'none' : '';
+  }
+
+  function updateButtons() {
+    if (grid.classList.contains('verified')) return;
+    const code = getValue();
+    if (code.length === 6) {
+      if (code === '000000') {
+        setError(true);
+        btnCont.classList.remove('active');
+      } else {
+        setVerified();
+      }
+    } else {
+      btnCont.classList.remove('active');
+    }
+  }
+
+  function setVerified() {
+    clearInterval(timerInterval);
+    grid.classList.add('verified');
+    timerEl.style.display = 'none';
+    verifiedEl.classList.add('visible');
+    btnResend.classList.remove('active');
+    btnCont.classList.add('active');
+  }
+
+  /* ── Comportamiento de celdas ────────────────────── */
+  cells.forEach((cell, i) => {
+
+    cell.addEventListener('input', (e) => {
+      // Limpiar error al volver a tipear
+      if (grid.classList.contains('error')) {
+        setError(false);
+        timerEl.style.display = '';
+      }
+
+      const val = e.target.value.replace(/\D/g, '');
+      cell.value = val ? val[val.length - 1] : '';
+
+      if (cell.value && i < cells.length - 1) {
+        cells[i + 1].focus();
+      }
+
+      updateButtons();
+    });
+
+    cell.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace') {
+        if (cell.value) {
+          cell.value = '';
+        } else if (i > 0) {
+          cells[i - 1].focus();
+          cells[i - 1].value = '';
+        }
+        // Limpiar error
+        if (grid.classList.contains('error')) {
+          setError(false);
+          timerEl.style.display = '';
+        }
+        updateButtons();
+      }
+
+      if (e.key === 'ArrowLeft' && i > 0)  { e.preventDefault(); cells[i - 1].focus(); }
+      if (e.key === 'ArrowRight' && i < cells.length - 1) { e.preventDefault(); cells[i + 1].focus(); }
+    });
+
+    // Pegar código completo
+    cell.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData)
+                       .getData('text')
+                       .replace(/\D/g, '')
+                       .slice(0, 6);
+      pasted.split('').forEach((digit, j) => {
+        if (cells[j]) cells[j].value = digit;
+      });
+      const nextEmpty = cells.findIndex(c => !c.value);
+      (nextEmpty >= 0 ? cells[nextEmpty] : cells[cells.length - 1]).focus();
+
+      if (grid.classList.contains('error')) { setError(false); timerEl.style.display = ''; }
+      updateButtons();
+    });
+
+    // Seleccionar contenido al hacer foco (para sobreescribir fácilmente)
+    cell.addEventListener('click', () => cell.select());
+  });
+
+  /* ── Reenviar código ─────────────────────────────── */
+  function reenviarCodigo() {
+    cells.forEach(c => c.value = '');
+    setError(false);
+    timerEl.style.display = '';
+    updateButtons();
+    startTimer();
+    cells[0].focus();
+  }
+
+  /* ── Continuar ───────────────────────────────────── */
+  function continuar() {
+    if (!grid.classList.contains('verified')) return;
+    window.location.href = 'biometria.html';
+  }
+</script>
+</body>
+</html>

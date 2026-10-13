@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Validación de identidad | FID by Lakaut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Montserrat:wght@500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/header.css" />
+  <link rel="stylesheet" href="assets/css/buttons.css" />
+
+  <style>
+    body, .page { background: #f8f9fa; }
+
+    /* ── CARD EXTERIOR ── */
+    .bio-card {
+      width: 100%;
+      max-width: 705px;
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 12px 12px 0 0;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── TÍTULOS ── */
+    .bio-title {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 28px;
+      color: #0b0c0e;
+      margin: 0 0 4px;
+    }
+
+    .bio-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #575768;
+      letter-spacing: 0.1px;
+      margin: 0;
+    }
+
+    /* ── INNER CONTENT (cámara + info) ── */
+    .camera-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+    }
+
+    .camera-card-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+    }
+
+    @media (max-width: 760px) {
+      .camera-card { flex: 1; }
+      .camera-card-inner { flex: 1; }
+    }
+
+    /* ── CÍRCULO DE CÁMARA ── */
+    .circle-wrap {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #3b3a45;
+      background: #000;
+      flex-shrink: 0;
+      transition: border-color 0.4s ease, border-width 0.4s ease;
+    }
+
+    .circle-wrap.success {
+      border-color: #108F50;
+      border-width: 4px;
+    }
+
+    .circle-wrap video,
+    .circle-wrap img.photo-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Flash al tomar foto */
+    .flash-overlay {
+      position: absolute;
+      inset: 0;
+      background: white;
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.05s ease;
+    }
+
+    .flash-overlay.active {
+      opacity: 1;
+    }
+
+    /* ── INSTRUCCIONES (estado 1) ── */
+    .instructions-card {
+      background: #fafafa;
+      border: 1px solid #f2f2f8;
+      border-radius: 16px;
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .instruction-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .instr-divider {
+      height: 1px;
+      background: #d1d1d1;
+      opacity: 0.5;
+      width: 100%;
+    }
+
+    .instr-icon-wrap {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .instr-icon-wrap .icon {
+      font-size: 20px;
+      color: #3b3a45;
+      font-variation-settings: 'FILL' 0, 'wght' 300;
+    }
+
+    .instr-text {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #3b3a45;
+      letter-spacing: 0.1px;
+    }
+
+    /* ── TARJETA ÉXITO (estado 2) ── */
+    .success-card {
+      background: #fafafa;
+      border: 1px solid #f2f2f8;
+      border-radius: 16px;
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .success-icon-wrap {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-icon-wrap .icon {
+      font-size: 18px;
+      color: #16a34a;
+      font-variation-settings: 'FILL' 1, 'wght' 400;
+    }
+
+    .success-text {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #3b3a45;
+      letter-spacing: 0.1px;
+    }
+
+    /* ── BOTONES ── */
+    .btn-row {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .btn-row .btn-secondary,
+    .btn-row .btn-outline,
+    .btn-row .btn-primary {
+      flex: 1;
+    }
+
+    .btn-tomar { width: 265px; align-self: center; margin-top: auto; }
+
+    /* Estado oculto */
+    .state-2 { display: none; }
+
+    /* ─── BOTÓN ─────────────────────────────────────────── */
+    .btn-biometria { width: 265px; align-self: center; }
+
+    @media (max-width: 760px) {
+      .bio-card { flex: 1; padding: 24px 16px; }
+      .btn-tomar, .btn-biometria { width: 100%; align-self: stretch; }
+      .circle-wrap { width: 220px; height: 220px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img class="header-logo"
+         src="assets/icons/logo-fid.svg"
+         alt="FID by Lakaut" />
+    <span class="header-title"><span class="header-title-skeleton"></span></span>
+    <button class="icon-btn" onclick="closePage()" aria-label="Cerrar">
+      <span class="icon">close</span>
+    </button>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <main class="content-area">
+<div class="card-wrap">
+    <div class="bio-card">
+
+      <!-- Título -->
+      <div class="title-section">
+        <h2 class="card-title">Sacá una foto de tu rostro</h2>
+        <p class="card-subtitle">Vamos a confirmar que sos la misma persona que figura en tu documento.</p>
+      </div>
+
+      <!-- Inner card con cámara -->
+      <div class="camera-card">
+        <div class="camera-card-inner">
+
+          <!-- Círculo cámara -->
+          <div class="circle-wrap" id="circleWrap">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <img id="photoPreview" class="photo-preview" style="display:none;" alt="Foto tomada" />
+            <canvas id="photoCanvas" style="display:none;"></canvas>
+            <div class="flash-overlay" id="flashOverlay"></div>
+          </div>
+
+          <!-- Estado 1: instrucciones -->
+          <div class="instructions-card state-1" id="state1Info">
+            <div class="instruction-row">
+              <div class="instr-icon-wrap">
+                <span class="material-symbols-outlined icon">ar_on_you</span>
+              </div>
+              <p class="instr-text">Ubica tu cara en el círculo, y presiona en tomar foto</p>
+            </div>
+            <div class="instr-divider"></div>
+            <div class="instruction-row">
+              <div class="instr-icon-wrap">
+                <span class="material-symbols-outlined icon">eyeglasses</span>
+              </div>
+              <p class="instr-text">Evitá elementos que tapen tu cara o hagan sombra. Ej. anteojos o sombreros.</p>
+            </div>
+          </div>
+
+          <!-- Estado 2: éxito -->
+          <div class="success-card state-2" id="state2Info">
+            <div class="success-icon-wrap">
+              <span class="material-symbols-outlined icon">check</span>
+            </div>
+            <p class="success-text">Foto tomada exitosamente</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Estado 1: botón único -->
+      <button class="btn-primary btn-tomar state-1" id="btnTomar" onclick="tomarFoto()">
+        <span>Tomar foto</span>
+      </button>
+
+      <!-- Estado 2: transición automática, sin botones -->
+
+    </div>
+    <div class="card-footer">
+      <span class="powered-label">POWERED BY</span>
+      <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    </div>
+    </div><!-- /.card-wrap -->
+  </main>
+
+</div>
+
+<script>
+  const video    = document.getElementById('cameraVideo');
+  const canvas   = document.getElementById('photoCanvas');
+  const preview  = document.getElementById('photoPreview');
+  const circle   = document.getElementById('circleWrap');
+  const flash    = document.getElementById('flashOverlay');
+  let stream     = null;
+
+  // Inicia la cámara al cargar
+  async function initCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      video.srcObject = stream;
+    } catch (e) {
+      // Si no hay permisos, muestra placeholder
+      video.style.background = '#1a1a2e';
+    }
+  }
+
+  function tomarFoto() {
+    // Captura el frame actual del video
+    canvas.width  = video.videoWidth  || 266;
+    canvas.height = video.videoHeight || 266;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Flash
+    flash.classList.add('active');
+    setTimeout(() => flash.classList.remove('active'), 150);
+
+    // Muestra la foto capturada
+    preview.src = canvas.toDataURL('image/jpeg', 0.92);
+    preview.style.display = 'block';
+    video.style.display = 'none';
+
+    // Detiene el stream
+    if (stream) stream.getTracks().forEach(t => t.stop());
+
+    // Borde verde
+    circle.classList.add('success');
+
+    // Cambia a estado 2 y redirige automáticamente
+    setTimeout(() => cambiarEstado(2), 200);
+    setTimeout(() => window.location.href = 'validando-identidad.html', 2000);
+  }
+
+  function reiniciarCamara() {
+    preview.style.display = 'none';
+    video.style.display = 'block';
+    circle.classList.remove('success');
+    cambiarEstado(1);
+    initCamera();
+  }
+
+  function cambiarEstado(n) {
+    document.querySelectorAll('.state-1').forEach(el =>
+      el.style.setProperty('display', n === 1 ? 'block' : 'none', 'important')
+    );
+    document.querySelectorAll('.state-2').forEach(el =>
+      el.style.setProperty('display', n === 2 ? 'flex' : 'none', 'important')
+    );
+  }
+
+  function closePage() {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    window.location.href = 'inicio.html';
+  }
+
+  initCamera();
+</script>
+</body>
+</html>

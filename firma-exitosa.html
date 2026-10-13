@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Documento firmado | FID by Lakaut</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/header.css" />
+  <link rel="stylesheet" href="assets/css/buttons.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+
+  <style>
+    body, .page { background: #f8f9fa; }
+
+    .success-card {
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--border-card);
+      border-radius: 12px 12px 0 0;
+      padding: 52px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 657px;
+    }
+
+    .success-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .lottie-wrap {
+      width: 160px;
+      height: 160px;
+      flex-shrink: 0;
+    }
+
+    .success-title {
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 30px;
+      color: var(--text-dark);
+      margin: 0;
+    }
+
+    .success-subtitle {
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--text-sub);
+      letter-spacing: 0.1px;
+      margin: 6px 0 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .actions button { width: 100%; }
+
+    .success-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .success-card { flex: 1; padding: 32px 16px 24px; min-height: unset; justify-content: flex-start; align-items: stretch; }
+      .success-inner { flex: 1; max-width: 100%; justify-content: space-between; }
+      .success-content { flex: 1; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img class="header-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    <span class="header-title"><span class="header-title-skeleton"></span></span>
+    <button class="icon-btn" aria-label="Cerrar" onclick="window.location.href='index.html'">
+      <span class="icon">close</span>
+    </button>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <main class="content-area">
+  <div class="card-wrap">
+    <div class="success-card">
+      <div class="success-inner">
+
+        <div class="success-content">
+          <div class="lottie-wrap" id="lottie-anim"></div>
+
+          <div>
+            <p class="success-title">Firmaste tu documento</p>
+            <p class="success-subtitle">Tu firma se realizó con éxito. Ya podés descargar el archivo.</p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary active" onclick="descargar()">
+            <span>Descargar documento</span>
+          </button>
+          <button class="btn-outline" onclick="window.location.href='index.html'">
+            <span>Ir al Inicio</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="powered-label">POWERED BY</span>
+      <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
+    </div>
+  </div>
+  </main>
+
+</div>
+
+<script>
+  function descargar() {
+    const btn = document.querySelector('.btn-primary');
+    btn.innerHTML = '<span>Descargando...</span>';
+    setTimeout(() => { btn.innerHTML = '<span>Descargar documento</span>'; }, 1500);
+  }
+</script>
+<script>
+  lottie.loadAnimation({ container: document.getElementById('lottie-anim'), renderer: 'svg', loop: false, autoplay: true, path: 'assets/Verification.json' });
+</script>
+</body>
+</html>
