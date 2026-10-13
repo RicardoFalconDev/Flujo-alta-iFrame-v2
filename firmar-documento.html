@@ -112,10 +112,6 @@
     .pdf-signature-table td, .pdf-signature-table th { border: .5px solid #bbb; padding: 1cqw 1.5cqw; vertical-align: top; }
     .pdf-signature-table .sig-cell { height: 13cqw; padding: 1cqw; vertical-align: middle; }
 
-    .sig-stamp { width: 100%; height: 100%; border: 1px dashed; border-radius: 4px; position: relative; overflow: hidden; min-height: 44px; }
-    .sig-stamp-card { position: absolute; inset: 0; border-left: 4px solid; display: flex; align-items: center; justify-content: center; padding: 1.5cqw 3cqw; box-shadow: 0 4px 5px rgba(0,0,0,0.10); }
-    .sig-stamp-name { font-size: 1.05em; font-weight: 600; font-family: 'Inter', sans-serif; text-align: center; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
     .pdf-page-num { text-align: center; font-size: 0.9em; color: #aaa; margin-top: 4cqw; }
 
     /* ── Scrollbar custom ── */
@@ -453,36 +449,6 @@
 </div>
 
 <script>
-  /* ── Paleta de colores de estampas (igual que posicionar-firmas) ── */
-  const STAMP_PALETTES = [
-    { dash: '#4758e7', accent: '#255eb1', text: '#155dfc', bg: '#f3f8ff' },
-    { dash: '#10b981', accent: '#0f766e', text: '#0d6d64', bg: '#ecfdf5' },
-    { dash: '#7c3aed', accent: '#6025d1', text: '#6025d1', bg: '#faf5ff' },
-    { dash: '#d97706', accent: '#92400e', text: '#b45309', bg: '#fffbeb' },
-    { dash: '#e11d48', accent: '#9f1239', text: '#be123c', bg: '#fff1f2' },
-    { dash: '#0369a1', accent: '#075985', text: '#0369a1', bg: '#f0f9ff' },
-  ];
-
-  function renderStamps() {
-    const raw = sessionStorage.getItem('firmantes');
-    const firmantes = raw ? JSON.parse(raw) : [
-      { nombre: 'Firmador 1', email: 'firmador1@gmail.com' },
-      { nombre: 'Firmador 2', email: 'firmador2@gmail.com' },
-    ];
-    const sigCells = document.querySelectorAll('.sig-cell');
-    firmantes.forEach((f, i) => {
-      if (!sigCells[i]) return;
-      const pal  = STAMP_PALETTES[i % STAMP_PALETTES.length];
-      const name = f.nombre || f.email.split('@')[0];
-      sigCells[i].innerHTML = `
-        <div class="sig-stamp" style="border-color:${pal.dash};">
-          <div class="sig-stamp-card" style="background:${pal.bg};border-left-color:${pal.accent};">
-            <span class="sig-stamp-name" style="color:${pal.text};">${name}</span>
-          </div>
-        </div>`;
-    });
-  }
-
   /* ── Referencias ── */
   const scroll        = document.getElementById('scroll');
   const pages          = [...document.querySelectorAll('.pdf-page')];
@@ -710,6 +676,7 @@
   const viewerEl   = document.querySelector('.viewer');
 
   const VIEWPORT_MIN = 240;
+  const VIEWPORT_ABSOLUTE_MIN = 120;
   function fitToWindow() {
     const root   = document.documentElement;
     const caCs   = getComputedStyle(contentEl);
@@ -725,13 +692,19 @@
     const cs   = getComputedStyle(scroll);
     const zoom = parseFloat(document.documentElement.style.getPropertyValue('--zoom')) || 1;
     const onePage = pages[0].offsetHeight / zoom + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-    const h = Math.max(VIEWPORT_MIN, Math.min(Math.floor(onePage), available));
+    /* Nunca superar "available": si lo hiciéramos, los botones de abajo
+       (Rechazar/Firmar) quedarían fuera de la pantalla y habría que
+       scrollear la página entera para verlos, que es justo lo que este
+       cálculo tiene que evitar. VIEWPORT_MIN solo se aplica cuando hay
+       lugar de sobra para respetarlo. */
+    let h = Math.min(Math.floor(onePage), available);
+    if (available >= VIEWPORT_MIN) h = Math.max(h, VIEWPORT_MIN);
+    h = Math.max(h, VIEWPORT_ABSOLUTE_MIN);
     root.style.setProperty('--viewport-h', `${h}px`);
   }
 
   /* ── Init ── */
   function init() {
-    renderStamps();
     fitToWindow();
     renderProgress();
     setZoom(zoomIndex);
