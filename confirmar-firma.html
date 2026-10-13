@@ -42,15 +42,29 @@
 
     .form-body {
       display: flex;
+      flex: 1;
       flex-direction: column;
-      gap: 40px;
+      justify-content: space-between;
+      min-height: 0;
     }
+
+    .forgot-link-row { display: flex; justify-content: center; }
+
+    .forgot-link {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      color: #1d4ed8;
+      letter-spacing: 0.1px;
+      cursor: pointer;
+    }
+
+    .confirm-actions { display: flex; flex-direction: column; gap: 36px; }
 
     @media (max-width: 640px) {
       .btn-confirm { width: 100%; }
       .btn-confirm-row { justify-content: stretch; }
-      .form-body { flex: 1; }
-      .btn-confirm-row { margin-top: auto; }
     }
   </style>
 </head>
@@ -89,7 +103,7 @@
             <input
               id="clave-input"
               type="password"
-              placeholder="Ingresa tu contraseña"
+              placeholder="Ingresa tu clave"
               autocomplete="current-password"
               oninput="onInput()"
             />
@@ -104,16 +118,18 @@
           <span class="field-helper" id="field-helper" style="font-size:12px;line-height:18px;">
             Es la que configuraste para tu certificado digital
           </span>
-          <p style="margin-top:8px;">
-            <span class="tyc-link" style="font-weight:700; text-decoration:underline; cursor:pointer; font-size:13px; color: var(--text-help);" onclick="sessionStorage.setItem('origenRecuperacion','1'); window.location.href='olvide-clave-confirmar.html'">¿Olvidaste tu clave de firma?</span>
-          </p>
         </div>
 
-        <!-- Botón -->
-        <div class="btn-confirm-row">
-          <button class="btn-submit btn-confirm" id="btn-confirm" onclick="confirmar()">
-            <span>Firmar documento</span>
-          </button>
+        <!-- Olvidé mi clave + botón -->
+        <div class="confirm-actions">
+          <div class="forgot-link-row">
+            <span class="forgot-link" onclick="sessionStorage.setItem('origenRecuperacion','1'); window.location.href='olvide-clave-confirmar.html'">Olvidé mi clave de firma</span>
+          </div>
+          <div class="btn-confirm-row">
+            <button class="btn-submit btn-confirm" id="btn-confirm" onclick="confirmar()">
+              <span>Firmar documento</span>
+            </button>
+          </div>
         </div>
 
       </div>
