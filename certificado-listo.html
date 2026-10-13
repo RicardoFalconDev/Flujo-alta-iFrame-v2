@@ -6,7 +6,7 @@
   <title>Certificado Digital | FID by Lakaut</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Montserrat:wght@500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/tokens.css" />
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/header.css" />
@@ -14,104 +14,66 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 
   <style>
-    /* card centrada, gap 32px entre secciones */
-    .main-card {
+    body, .page { background: #f8f9fa; }
+
+    .success-card {
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--border-card);
+      border-radius: 12px 12px 0 0;
+      padding: 52px 24px 32px;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 32px;
+      justify-content: center;
+      min-height: 657px;
     }
 
-    /* ─── SECCIÓN ÍCONO + TÍTULO ─────────────────────── */
-    .cert-content {
+    .success-inner {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 24px;
       width: 100%;
-      max-width: 484px;
-    }
-
-    .lottie-wrap {
-      width: 80px;
-      height: 80px;
-      flex-shrink: 0;
-      margin-bottom: -12px;
-    }
-
-    .cert-title-block {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      max-width: 360px;
       text-align: center;
-      width: 100%;
     }
 
-    .cert-title {
+    .lottie-wrap { width: 160px; height: 160px; flex-shrink: 0; }
+
+    .success-title {
       font-family: 'Open Sans', sans-serif;
       font-weight: 600;
       font-size: 24px;
       line-height: 32px;
       color: var(--text-main);
+      margin: 0;
     }
 
-    .cert-subtitle {
+    .success-subtitle {
       font-family: 'Open Sans', sans-serif;
-      font-weight: 400;
       font-size: 14px;
       line-height: 20px;
       color: var(--text-help);
       letter-spacing: 0.1px;
+      margin: 6px 0 0;
     }
 
-    /* ─── TABLA DATOS ────────────────────────────────── */
-    .cert-details {
-      width: 484px;
-      background: #fff;
-      border: 1px solid var(--border-card);
-      border-radius: 16px;
-      padding: 24px;
+    .actions { width: 256px; margin-top: 8px; }
+    .actions button { width: 100%; }
+
+    .success-content {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 24px;
     }
-
-    .cert-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #000;
-    }
-
-    .cert-label {
-      font-weight: 600;
-      flex-shrink: 0;
-      min-width: 150px;
-    }
-
-    .cert-value {
-      flex: 1;
-      font-weight: 400;
-      text-align: right;
-      word-break: break-all;
-    }
-
-    /* ─── BOTÓN ──────────────────────────────────────── */
-    .btn-finalizar { width: 256px; }
 
     @media (max-width: 640px) {
-      .cert-feed { padding: 16px; }
-      .cert-card { padding: 32px 16px; }
-      .cert-content { max-width: 100%; }
-      .cert-details { width: 100%; padding: 16px; }
-      .btn-finalizar { width: 100%; }
-    }
-
-    @media (max-width: 400px) {
-      .cert-row { flex-direction: column; gap: 2px; }
-      .cert-label { min-width: unset; }
-      .cert-value { text-align: left; }
+      .success-card { flex: 1; padding: 32px 16px 24px; min-height: unset; justify-content: flex-start; align-items: stretch; }
+      .success-inner { flex: 1; max-width: 100%; justify-content: space-between; }
+      .success-content { flex: 1; justify-content: center; }
+      .actions { width: 100%; }
     }
   </style>
 </head>
@@ -129,91 +91,37 @@
 
   <!-- ── CONTENT ── -->
   <main class="content-area">
-<div class="card-wrap">
-    <div class="main-card">
+  <div class="card-wrap">
+    <div class="success-card">
+      <div class="success-inner">
 
-      <!-- Ícono + título -->
-      <div class="cert-content">
-        <div class="lottie-wrap" id="lottie-anim"></div>
-        <div class="cert-title-block">
-          <h2 class="cert-title">Todo listo para firmar</h2>
-          <p class="cert-subtitle">Tu certificado digital se encuentra habilitado<br>para firmas digitales.</p>
+        <div class="success-content">
+          <div class="lottie-wrap" id="lottie-anim"></div>
+
+          <div>
+            <p class="success-title">Todo listo para firmar</p>
+            <p class="success-subtitle">Tu certificado de firma digital se encuentra habilitado. Solo queda revisar el documento que vas a firmar.</p>
+          </div>
         </div>
+
+        <div class="actions">
+          <button class="btn-primary active" onclick="irAFirmar()">
+            <span>Firmar documento</span>
+          </button>
+        </div>
+
       </div>
-
-      <!-- Datos del certificado -->
-      <div class="cert-details">
-        <div class="cert-row">
-          <span class="cert-label">Nombre</span>
-          <span class="cert-value">Isaac Cristian Meneses</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">CUIL</span>
-          <span class="cert-value">20-12345678-2</span>
-        </div>
-        <div class="cert-row juridico-only">
-          <span class="cert-label">CUIL de la empresa</span>
-          <span class="cert-value">30-12345678-1</span>
-        </div>
-        <div class="cert-row juridico-only">
-          <span class="cert-label">Razón social</span>
-          <span class="cert-value">Anónima S.A</span>
-        </div>
-        <div class="cert-row juridico-only">
-          <span class="cert-label">Cargo</span>
-          <span class="cert-value">Presidente</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">Correo</span>
-          <span class="cert-value">isacris23@gmail.com</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">N° de solicitud</span>
-          <span class="cert-value">10000555</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">Fecha de vencimiento</span>
-          <span class="cert-value">03-11-2027</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">N° de serie</span>
-          <span class="cert-value">3244geghth67787hhyh6</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">Almacenamiento</span>
-          <span class="cert-value">Nube</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">Autoridad (CA)</span>
-          <span class="cert-value">AC2-Lakaut</span>
-        </div>
-        <div class="cert-row">
-          <span class="cert-label">Pin de revocación</span>
-          <span class="cert-value">3244geghth67787hhyh63244geg</span>
-        </div>
-      </div>
-
-      <!-- Botón -->
-      <button class="btn-primary btn-finalizar active"
-              onclick="irAFirmar()">
-        <span>Firmar documento</span>
-      </button>
-
     </div>
     <div class="card-footer">
       <span class="powered-label">POWERED BY</span>
       <img class="powered-logo" src="assets/icons/logo-fid.svg" alt="FID by Lakaut" />
     </div>
-    </div><!-- /.card-wrap -->
+  </div>
   </main>
 
 </div>
 
 <script>
-  if (sessionStorage.getItem('flow') === 'pf') {
-    document.querySelectorAll('.juridico-only').forEach(el => el.style.display = 'none');
-  }
-
   function irAFirmar() {
     if (sessionStorage.getItem('origenRecuperacion') === '1') {
       sessionStorage.removeItem('origenRecuperacion');
